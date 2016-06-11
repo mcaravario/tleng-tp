@@ -6,7 +6,7 @@ def t_NEWLINE(token):
 
 def t_NUMBER(token):
     r"0|[1-9][0-9]*"
-    token.value = int(token.value)
+    token.value = token.value
     return token
 
 def t_error(token):
