@@ -1,10 +1,9 @@
 import lexer_rules
+import parser_rules
 from ply.lex import lex
-
-text = "{  alumno.nombre    = \" Marto Caravario \", alumno.edad  =  23}"
+from ply.yacc import yacc
 lexer = lex(module=lexer_rules)
-lexer.input(text)
-token = lexer.token()
-while token is not None:
-  print(token.value)
-  token = lexer.token()
+parser = yacc(module=parser_rules)
+text = "marto[3+4+(5+6)*8+2]"
+res = parser.parse(text, lexer)
+print(res.__dict__)
