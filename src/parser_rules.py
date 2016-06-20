@@ -15,25 +15,19 @@ def p_error(se):
 
 # STMT
 
-def p_stmt_single(se):
-    "stmt : stmtop"
-    se[0] = Declaracion(se[1].texto)
-
-def p_stmt_chain(se):
-    "stmt : stmtop stmt"
-    se[0] = Declaracion(se[1].texto + se[2].texto)
-
-def p_stmtop2assign(se):
-    "stmtop : assign SEMICOLON"
-    se[0] = Declaracion(se[1].texto + ";\n")
-
-def p_stmtop2call(se):
-    "stmtop : call SEMICOLON"
-    se[0] = Declaracion(se[1].texto + ";\n")
-
-def p_stmtop2comment(se):
-    "stmtop : COMMENT"
-    se[0] = Declaracion(se[1] + "\n")
+def p_stmt(se):
+    """
+    stmt :
+         | COMMENT stmt
+         | assign SEMICOLON stmt
+         | call SEMICOLON stmt
+    """
+    if len(se) == 1: # vacio
+        se[0] = Declaracion("")
+    elif len(se) == 3: # comentario
+        se[0] = Declaracion(se[1] + "\n" + se[2].texto)
+    elif len(se) == 4: # assign | call
+        se[0] = Declaracion(se[1].texto + ";\n" + se[3].texto)
 
 
 # ASSIGN
