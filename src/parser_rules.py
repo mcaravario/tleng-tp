@@ -1,11 +1,15 @@
 from tokens import *
 from expression import *
 
+
 def p_error(se):
     msg = "Parsing error @ line {0}, column {1}:".format(se.lineno, se.lexpos + 1)
     msg += "\n\trule: " + se.type
     msg += "\n\tsubexpression value: " + se.value
     raise Exception(msg)
+
+
+# ARI
 
 def p_ari_add(se):
     "ari_a : ari_a ADD ari_t"
@@ -32,6 +36,9 @@ def p_ari_f_term(se):
 def p_ari_pa(se):
     "ari_f : LPARENT ari_a RPARENT"
     se[0] = Termino("(" + se[2].texto + ")", "INT")
+
+
+# TERM
 
 def p_term_number(se):
     "term : NUMBER"
