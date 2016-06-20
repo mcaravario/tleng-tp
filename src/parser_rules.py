@@ -2,12 +2,15 @@ from tokens import *
 from expression import *
 
 
+def err(se):
+    return "Error de parseo en línea {0}".format(se.lineno)
+
+
 def p_error(se):
     if se is None:
         msg = "Parsing error."
     else:
-        msg = "Parsing error @ line {0}, column {1}:".format(se.lineno,
-                                                             se.lexpos + 1)
+        msg = err(se)
         msg += "\n\trule: " + se.type
         msg += "\n\tsubexpression value: " + se.value
     raise Exception(msg)
