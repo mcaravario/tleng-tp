@@ -3,9 +3,13 @@ from expression import *
 
 
 def p_error(se):
-    msg = "Parsing error @ line {0}, column {1}:".format(se.lineno, se.lexpos + 1)
-    msg += "\n\trule: " + se.type
-    msg += "\n\tsubexpression value: " + se.value
+    if se is None:
+        msg = "Parsing error."
+    else:
+        msg = "Parsing error @ line {0}, column {1}:".format(se.lineno,
+                                                             se.lexpos + 1)
+        msg += "\n\trule: " + se.type
+        msg += "\n\tsubexpression value: " + se.value
     raise Exception(msg)
 
 
