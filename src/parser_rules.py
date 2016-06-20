@@ -107,19 +107,34 @@ def p_term_index(se):
     "term : ID LBRACKET ari_a RBRACKET"
     se[0] = Termino(se[1] + "[" + se[3].texto + "]", "UNKNOWN")
 
-def p_term_array_single(se):
-    "term : LBRACKET elemlist RBRACKET"
-    se[0] = Termino("[" + se[2].texto + "]", "ARR_" + se[2].tipo)
+def p_termlist(se):
+    """
+    termlist :
+             | term
+             | termchain termlist
+    """
+    if len(se) == 1:
+        se[0] = []
+    elif len(se) == 2:
+        se[0] = [se[1]]
+    elif len(se) == 3:
+        se[0] = [se[1]] + se[2]
 
-def p_elemlist_single(se):
-    "elemlist : term"
+def p_termchain(se):
+    "termchain : term COMMA"
     se[0] = se[1]
 
-def p_elemlist_chain(se):
-    "elemlist : term COMMA elemlist"
-    if se[1].tipo != se[3].tipo:
-        raise Exception("Type mismatch in array declaration.")
-    se[0] = Termino(se[1].texto + ", " + se[3].texto, se[1].tipo)
+def p_term_array(se):
+    "term : LBRACKET termlist RBRACKET"
+    if len(se[2]) == 0:
+        tipo = "UNKNOWN"
+    else:
+        tipo = se[2][0].tipo
+        if any(e.tipo != tipo for e in se[2]):
+            msg = err(se)
+            msg += " los elementos del arreglo no son del mismo tipo."
+            raise Exception(msg)
+    se[0] = Termino("[" + ", ".join(e.texto for e in se[2]) + "]", "ARR_" + tipo)
 
 # def p_expression_algo(se):
 #     "expression : term"
