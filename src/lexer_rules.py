@@ -1,5 +1,11 @@
 from tokens import *
 
+def t_error(tok):
+    msg = "Unknown token @ line {0} column {1}:".format(tok.lineno,
+                                                        tok.lexpos + 1)
+    msg += "\n\tvalue: " + str(tok.value)
+    raise Exception(msg)
+
 def t_NEWLINE(tok):
     r"\n+"
     tok.lexer.lineno += len(tok.value)
@@ -8,14 +14,6 @@ def t_NUMBER(tok):
     r"0|[1-9][0-9]*"
     tok.value = tok.value
     return tok
-
-def t_error(tok):
-    msg = "token desconocido:"
-    msg += "\ntype:" + tok.type
-    msg += "\nvalue:" + str(tok.value)
-    msg += "\nline:" + str(tok.lineno)
-    msg += "\nposition:" + str(tok.lexpos)
-    raise Exception(msg)
 
 t_ignore_WHITESPACES = r"[ \t]+"
 
