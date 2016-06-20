@@ -9,6 +9,32 @@ def p_error(se):
     raise Exception(msg)
 
 
+# STMT
+
+def p_stmt_single(se):
+    "stmt : stmtop SEMICOLON"
+    se[0] = Declaracion(se[1].texto + ";\n")
+
+def p_stmt_chain(se):
+    "stmt : stmtop SEMICOLON stmt"
+    se[0] = Declaracion(se[1].texto + ";\n" + se[3].texto)
+
+def p_stmtop2assign(se):
+    "stmtop : assign"
+    se[0] = se[1]
+
+def p_stmtop2call(se):
+    "stmtop : call"
+    se[0] = se[1]
+
+
+# ASSIGN
+
+def p_assign(se):
+    "assign : ID ASSIGN term"
+    se[0] = Declaracion(se[1] + " = " + se[3].texto)
+
+
 # ARI
 
 def p_ari_add(se):
