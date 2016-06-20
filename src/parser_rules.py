@@ -42,7 +42,7 @@ def p_ari_parens(se):
 
 def p_term_number(se):
     "term : NUMBER"
-    se[0] = Termino(se[1],"INT")
+    se[0] = Termino(se[1], "INT")
 
 def p_term_string(se):
     "term : STRING"
@@ -50,31 +50,31 @@ def p_term_string(se):
 
 def p_term_true(se):
     "term : TRUE"
-    se[0] = Termino(se[1],"BOOL")
+    se[0] = Termino(se[1], "BOOL")
 
 def p_term_false(se):
     "term : FALSE"
-    se[0] = Termino(se[1],"BOOL")
+    se[0] = Termino(se[1], "BOOL")
 
 def p_term_id(se):
     "term : ID"
-    se[0] = Termino(se[1],"UNKNOWN")
+    se[0] = Termino(se[1], "UNKNOWN")
 
 def p_term_res(se):
     "term : RES"
-    se[0] = Termino(se[1],"UNKNOWN")
+    se[0] = Termino(se[1], "UNKNOWN")
 
 def p_term_register(se):
     "term : ID DOT ID"
-    se[0] = Termino(se[1] + "." + se[3],"UNKNOWN")
+    se[0] = Termino(se[1] + "." + se[3], "UNKNOWN")
 
 def p_term_paren(se):
     "term : LPARENT term RPARENT"
-    se[0] = Termino("(" + se[2].texto + ")",se[2].tipo)
+    se[0] = Termino("(" + se[2].texto + ")", se[2].tipo)
 
 def p_term_index(se):
     "term : ID LBRACKET ari_a RBRACKET"
-    se[0] = Termino(se[1] + "[" + se[3].texto + "]","UNKNOWN")
+    se[0] = Termino(se[1] + "[" + se[3].texto + "]", "UNKNOWN")
 
 # def p_expression_algo(se):
 #     "expression : term"
