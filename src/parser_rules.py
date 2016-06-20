@@ -72,7 +72,7 @@ def p_ari_parens(se):
 
 def p_term_number(se):
     "term : NUMBER"
-    se[0] = Termino(se[1], "INT")
+    se[0] = Termino(se[1], "NUMBER")
 
 def p_term_string(se):
     "term : STRING"

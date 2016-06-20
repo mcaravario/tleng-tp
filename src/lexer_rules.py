@@ -11,7 +11,7 @@ def t_NEWLINE(tok):
     tok.lexer.lineno += len(tok.value)
 
 def t_NUMBER(tok):
-    r"0|[1-9][0-9]*"
+    r"[0-9]+(\.[0-9]+)?"
     tok.value = tok.value
     return tok
 
