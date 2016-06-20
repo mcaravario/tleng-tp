@@ -1,72 +1,72 @@
 from tokens import *
 from expression import *
 
-def p_arithmetic_add(subexpr):
+def p_ari_add(se):
     'ari_a : ari_a ADD ari_t'
-    if subexpr[1].tipo != subexpr[3].tipo:
+    if se[1].tipo != se[3].tipo:
         raise Exception('NO ESTAN BIEN LOS TIPOS')
-    subexpr[0] = Termino(subexpr[1].texto + ' + ' + subexpr[3].texto, 'INT')
-    
-def p_arithmetic_a_t(subexpr):
-    'ari_a : ari_t' 
-    subexpr[0] = subexpr[1]
+    se[0] = Termino(se[1].texto + ' + ' + se[3].texto, 'INT')
 
-def p_arithmetic_mult(subexpr):
+def p_ari_a_t(se):
+    'ari_a : ari_t'
+    se[0] = se[1]
+
+def p_ari_mult(se):
     'ari_t : ari_t MULT ari_f'
-    subexpr[0] = Termino(subexpr[1].texto + ' * ' + subexpr[3].texto, 'INT')
+    se[0] = Termino(se[1].texto + ' * ' + se[3].texto, 'INT')
 
-def p_arithmetic_t_f(subexpr):
-    'ari_t : ari_f' 
-    subexpr[0] = subexpr[1]
+def p_ari_t_f(se):
+    'ari_t : ari_f'
+    se[0] = se[1]
 
-def p_arithmetic_f_term(subexpr):
+def p_ari_f_term(se):
     'ari_f : term'
-    subexpr[0] = subexpr[1]
+    se[0] = se[1]
 
-def p_ari_pa(subexpr):
+def p_ari_pa(se):
     'ari_f : LPARENT ari_a RPARENT'
-    subexpr[0] = Termino('(' + subexpr[2].texto + ')', 'INT')
+    se[0] = Termino('(' + se[2].texto + ')', 'INT')
 
-def p_error(subexpr):
+def p_error(se):
     raise Exception("Syntax error.")
 
-def p_term_number(subexpr):
+def p_term_number(se):
     'term : NUMBER'
-    subexpr[0] = Termino(subexpr[1],'INT')
+    se[0] = Termino(se[1],'INT')
 
-def p_term_string(subexpr):
+def p_term_string(se):
     'term : STRING'
-    subexpr[0] = Termino(subexpr[1], 'STRING')
+    se[0] = Termino(se[1], 'STRING')
 
-def p_term_true(subexpr):
+def p_term_true(se):
     'term : TRUE'
-    subexpr[0] = Termino(subexpr[1],'BOOL')
+    se[0] = Termino(se[1],'BOOL')
 
-def p_term_false(subexpr):
+def p_term_false(se):
     'term : FALSE'
-    subexpr[0] = Termino(subexpr[1],'BOOL')
+    se[0] = Termino(se[1],'BOOL')
 
-def p_term_id(subexpr):
+def p_term_id(se):
     'term : ID'
-    subexpr[0] = Termino(subexpr[1],'UNKNOWN')
+    se[0] = Termino(se[1],'UNKNOWN')
 
-def p_term_res(subexpr):
+def p_term_res(se):
     'term : RES'
-    subexpr[0] = Termino(subexpr[1],'UNKNOWN')
+    se[0] = Termino(se[1],'UNKNOWN')
 
-def p_term_register(subexpr):
+def p_term_register(se):
     'term : ID DOT ID'
-    subexpr[0] = Termino(subexpr[1]+'.'+subexpr[3],'UNKNOWN')
+    se[0] = Termino(se[1] + '.' + se[3],'UNKNOWN')
 
-def p_term_paren(subexpr):
+def p_term_paren(se):
     'term : LPARENT term RPARENT'
-    subexpr[0] = Termino('('+subexpr[2].texto+')',subexpr[2].tipo)
-    
-def p_term_index(subexpr):
-    'term : ID LBRACKET ari_a RBRACKET'
-    subexpr[0] = Termino(subexpr[1] + '['+subexpr[3].texto+']','UNKNOWN')
+    se[0] = Termino('(' + se[2].texto + ')',se[2].tipo)
 
-# def p_expression_algo(subexpr):
+def p_term_index(se):
+    'term : ID LBRACKET ari_a RBRACKET'
+    se[0] = Termino(se[1] + '[' + se[3].texto + ']','UNKNOWN')
+
+# def p_expression_algo(se):
 #     'expression : term'
-#     subexpr[0] = subexpr[1]
+#     se[0] = se[1]
 

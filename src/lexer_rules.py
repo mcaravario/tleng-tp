@@ -1,21 +1,21 @@
 from tokens import *
 
-def t_NEWLINE(token):
+def t_NEWLINE(tok):
     r"\n+"
-    token.lexer.lineno += len(token.value)
+    tok.lexer.lineno += len(tok.value)
 
-def t_NUMBER(token):
+def t_NUMBER(tok):
     r"0|[1-9][0-9]*"
-    token.value = token.value
-    return token
+    tok.value = tok.value
+    return tok
 
-def t_error(token):
-    message = "Token desconocido:"
-    message += "\ntype:" + token.type
-    message += "\nvalue:" + str(token.value)
-    message += "\nline:" + str(token.lineno)
-    message += "\nposition:" + str(token.lexpos)
-    raise Exception(message)
+def t_error(tok):
+    msg = "token desconocido:"
+    msg += "\ntype:" + tok.type
+    msg += "\nvalue:" + str(tok.value)
+    msg += "\nline:" + str(tok.lineno)
+    msg += "\nposition:" + str(tok.lexpos)
+    raise Exception(msg)
 
 t_ignore_WHITESPACES = r"[ \t]+"
 
