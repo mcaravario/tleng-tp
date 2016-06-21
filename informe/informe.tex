@@ -1,0 +1,156 @@
+\documentclass[a4paper, 12pt, spanish]{article}
+
+\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
+\usepackage[spanish, es-noshorthands]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[none]{hyphenat}
+\usepackage[colorlinks,citecolor=black,filecolor=black,linkcolor=black,    urlcolor=black]{hyperref}
+
+% Simbolos matemáticos
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[noend]{algpseudocode}
+\usepackage{listings}
+
+% Descoración y gráficos
+\usepackage{caratulaV}
+\usepackage{graphicx} 
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{alltt}
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{verbatim}
+\usepackage{framed}
+
+% Bibliografía
+\usepackage{natbib}
+
+% Del enunciado
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+%\usepackage[ruled,vlined]{algorithm2e}
+
+\newcommand{\kknn}{k}
+\newcommand{\kpca}{\alpha}
+\newcommand{\kkfold}{K}
+
+% Acomodo fancyhdr.
+\pagestyle{fancy}
+\thispagestyle{fancy}
+\addtolength{\headheight}{1pt}
+\lhead{Métodos Númericos}
+\rhead{$1^{\mathrm{er}}$ cuatrimestre de 2015}
+\cfoot{\thepage /\pageref*{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\sloppy
+
+\parskip=5pt % 10pt es el tama de fuente
+
+% Pongo en 0 la distancia extra entre itemes.
+\let\olditemize\itemize
+\def\itemize{\olditemize\itemsep=0pt}
+
+
+%\materia{Métodos Númericos}
+%\grupo{Conformación del grupo}
+%\tituloCaratula{Trabajo Práctico N$^\circ$1\\ \vspace{0.5cm} ``No creo que a él le gustará eso''}
+
+
+\usepackage{tikz}
+%\usepackage{tikz-qtree}
+
+
+\usetikzlibrary{arrows,backgrounds,calc}
+
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\nat}{\mathbb{N}}
+
+\newcommand{\revJ}[1]{{\color{red} #1}}
+
+\newcommand{\convexpath}[2]{
+[ 
+    create hullnodes/.code={
+        \global\edef\namelist{#1}
+        \foreach [count=\counter] \nodename in \namelist {
+            \global\edef\numberofnodes{\counter}
+            \node at (\nodename) [draw=none,name=hullnode\counter] {};
+        }
+        \node at (hullnode\numberofnodes) [name=hullnode0,draw=none] {};
+        \pgfmathtruncatemacro\lastnumber{\numberofnodes+1}
+        \node at (hullnode1) [name=hullnode\lastnumber,draw=none] {};
+    },
+    create hullnodes
+]
+($(hullnode1)!#2!-90:(hullnode0)$)
+\foreach [
+    evaluate=\currentnode as \previousnode using \currentnode-1,
+    evaluate=\currentnode as \nextnode using \currentnode+1
+    ] \currentnode in {1,...,\numberofnodes} {
+-- ($(hullnode\currentnode)!#2!-90:(hullnode\previousnode)$)
+  let \p1 = ($(hullnode\currentnode)!#2!-90:(hullnode\previousnode) - (hullnode\currentnode)$),
+    \n1 = {atan2(\x1,\y1)},
+    \p2 = ($(hullnode\currentnode)!#2!90:(hullnode\nextnode) - (hullnode\currentnode)$),
+    \n2 = {atan2(\x2,\y2)},
+    \n{delta} = {-Mod(\n1-\n2,360)}
+  in 
+    {arc [start angle=\n1, delta angle=\n{delta}, radius=#2]}
+}
+-- cycle
+}
+
+\newcommand{\todo}[1]{
+\textbf{\color{red}{\underline{Nota:} #1}}
+}
+
+\newcommand\param[3]{\ensuremath{\mathbf{\textbf{#1}}\,#2\!:} \texttt{#3}}
+
+
+\newcommand{\degree}{\ensuremath{^\circ}}
+
+\begin{document}
+%\setcounter{tocdepth}{2}
+\renewcommand{\tablename}{Tabla} 
+
+
+\thispagestyle{empty}
+\materia{Teoría de Lenguajes}
+\submateria{Primer Cuatrimestre de 2016}
+\titulo{Trabajo Práctico}
+\subtitulo{\emph{``SLS: Un simple lenguaje de Scripting''}}
+\integrante{Juan Cruz Sosa}{733/12}{nirvguy@gmail.com}
+\integrante{Lucas Vuotto}{385/12}{lvuotto@dc.uba.ar}
+\integrante{Martín Caravario}{470/12}{martin.caravario@gmail.com}
+\maketitle
+\newpage
+%\begin{titlepage}
+
+%\maketitle
+
+%\end{titlepage}
+\setcounter{page}{1}
+\newpage
+\input{introduccion}
+\tableofcontents
+\newpage
+\input{gramatica}
+\newpage
+\input{pruebas}
+\newpage
+\input{apendice}
+\bibliographystyle{plain}
+\bibliography{bibliografia}
+\ref{LastPage}
+
+\end{document}
