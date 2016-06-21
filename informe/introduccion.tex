@@ -1,1 +1,28 @@
 \section{Introducción}
+
+	En este trabajo se implementó un software para el lenguaje de scripting
+	\textbf{SLS} (Simple Lenguaje de Scripting). Este software recibe como entrada
+	un código fuente. Si éste pertenece al lenguaje \textbf{SLS} (incluyendo
+	esto que el código tipe bien), lo formatea añadiendo saltos de línea,
+	agregando (o eliminado) espacios faltantes (o de sobra) e indentándolo
+	adecuadamente. En caso de no pertenecer al lenguaje el software informa cual es el
+	error de sintaxis que se encontró (si lo hubo) ó, si se trató de
+	error de tipado, cual era el tipo que se esperaba.
+	
+	Para esta tarea se necesitó realizar un lexer y un parser
+	para poder analizar el código fuente. El parser se implemento siguiendo
+	los lineamientos de la gramática de la Sección \ref{sec:gramatica}.
+	
+	El lexer es el que irá descomponiendo el código como una secuencia 
+	de \textbf{TOKENS} del lenguaje (que serán los símbolos terminales de la gramática).
+
+	El parser es el que llevará a cabo el objetivo de armar el árbol
+	de derivación de la cadena (el código fuente) si es que el código pertenece al lenguaje.
+	Luego el árbol será procesado produciendo el código bien formateado.
+
+\subsection{Herramientas utilizadas}
+	El parser y el lexer fueron realizados en python con la herramienta
+	$PLY$ (\textit{Python Lex-Yacc}) que es una implementación de lex y yacc para
+	el lenguaje \textit{Python}.
+
+\newpage
