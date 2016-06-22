@@ -11,7 +11,6 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\usepackage[noend]{algpseudocode}
 \usepackage{listings}
 
 % Descoración y gráficos
@@ -27,7 +26,12 @@
 \usepackage{color}
 \usepackage{verbatim}
 \usepackage{framed}
-
+\newenvironment{reglas}
+{   \begin{tabular}{lcl} }
+{ \end{tabular}\\ }
+\newcommand{\regla}[2]{#1 & $\to$ & #2 \\ }%
+\newcommand{\aregla}[1]{\ &  $|$  & #1 \\ }%
+\newcommand{\newToken}[2]{\newcommand{#1}{\textbf{#2} }}
 % Bibliografía
 \usepackage{natbib}
 
