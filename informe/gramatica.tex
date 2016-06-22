@@ -6,3 +6,69 @@
 	\textit{tokens.py} (Ver sección \ref{codigo:tokens}).
 
 \subsection{Producciones}
+	Las producciones de la gramatica son las siguientes. Los terminales
+	están puestos en negrita y los no terminales en mayúscula.
+% TOKENS
+\newToken{\COMMENT}{comment}
+\newToken{\SEMICOLON}{;}
+\newToken{\ID}{id}
+\newToken{\NUMBER}{num}
+\newToken{\STRING}{str}
+\newToken{\TRUE}{true}
+\newToken{\FALSE}{false}
+\newToken{\RES}{res}
+\newToken{\DOT}{.}
+\newToken{\LPARENT}{(}
+\newToken{\RPARENT}{)}
+\newToken{\LBRACKET}{[}
+\newToken{\RBRACKET}{]}
+\newToken{\LBRACE}{\left\lbrace}
+\newToken{\RBRACE}{\right\rbrace}
+\newToken{\MULTESCALAR}{multiplicacionEscalar}
+\newToken{\CAPITALIZAR}{capitalizar}
+\newToken{\COLINEALES}{colineales}
+\newToken{\PRINT}{print}
+\newToken{\LENGTH}{length}
+\newToken{\ADD}{+}
+\newToken{\MULT}{*}
+\newToken{\COMMA}{,}
+% REGLAS
+\subsubsection{Asignaciones y llamados a funciones}
+\begin{reglas}
+	\regla{STMT}{\COMMENT STMT}
+	\aregla{ASSIGN \SEMICOLON STMT}
+	\aregla{CALL \SEMICOLON STMT}
+	\\
+	\regla{ASSIGN}{\ID ASSIGN TERM}
+	\\
+	\regla{CALL}{FUNNAME \LPARENT TERMLIST \RPARENT}
+	\\
+	\regla{FUNNAME}{\MULTESCALAR}
+	\aregla{\CAPITALIZAR}
+	\aregla{\COLINEALES}
+	\aregla{\PRINT}
+	\aregla{\LENGTH}
+\end{reglas}
+\subsubsection{Aritméticas}
+\begin{reglas}
+	\regla{ARI\_A}{ARI\_A \ADD ARI\_T}
+	\aregla{ARI\_T}
+	\regla{ATI\_T}{ARI\_T \MULT ARI\_F}
+	\aregla{ARI\_F}
+	\regla{ARI\_F}{\LPARENT ARI\_A \RPARENT}
+	\aregla{TERM}
+\end{reglas}
+\subsubsection{Terminos}
+\begin{reglas}
+	\regla{TERM}{\NUMBER}
+	\aregla{\STRING}
+	\aregla{\TRUE}
+	\aregla{\FALSE}
+	\aregla{\ID}
+	\aregla{\RES}
+	\aregla{\ID \DOT \ID}
+	\aregla{\ID \LBRACKET ARI\_A \RBRACKET}
+	\\
+	\regla{TERMLIST}{TERM}
+	\aregla{TERM \COMMA TERMLIST}
+\end{reglas}
