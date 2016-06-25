@@ -39,10 +39,11 @@ def p_instr(se):
           | assign SEMICOLON
           | call SEMICOLON
           | conditional
+          | loop
     """
     if len(se) == 2 and (type(se[1]) is str): # COMMENT
         se[0] = Instruccion(se[1] + "\n")
-    elif len(se) == 2 and (type(se[1]) is Instruccion): # conditional
+    elif len(se) == 2 and (type(se[1]) is Instruccion): # conditional | loop
         se[0] = Instruccion(se[1].texto)
     else: # assign SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";\n")
@@ -83,6 +84,30 @@ def p_elsebranch(se):
         se[0] = Instruccion("")
     elif len(se) == 3: # ELSE ifblock
         se[0] = Instruccion("else {}".format(se[2].texto))
+
+
+# LOOP
+
+def p_loop(se):
+    """
+    loop : FOR LPARENT assign SEMICOLON term SEMICOLON term RPARENT block
+         | WHILE LPARENT term RPARENT block
+         | DO block WHILE LPARENT term RPARENT SEMICOLON
+    """
+    if len(se) == 10: # FOR LPARENT assign SEMICOLON term SEMICOLON term RPARENT block
+        se[0] = Instruccion("for ({}; {}; {}){}".format(se[3].texto,
+                                                        se[5].texto,
+                                                        se[7].texto,
+                                                        se[9].texto))
+    elif len(se) == 6: # WHILE LPARENT term RPARENT block
+        se[0] = Instruccion("while ({}) {}".format(se[3].texto, se[5].texto))
+    else: # DO block WHILE LPARENT term RPARENT SEMICOLON
+        # esto no puede generar una excepción IndexError, pues los terminos son
+        # no vacios y los bloques siempre terminan en '\n'
+        if se[2].texto[-2] == "}":
+            se[0] = Instruccion("do {} while ({});\n".format(se[2].texto.rstrip(), se[5].texto))
+        else:
+            se[0] = Instruccion("do {}while ({});\n".format(se[2].texto, se[5].texto))
 
 
 # ASSIGN
