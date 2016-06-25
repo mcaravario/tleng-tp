@@ -2,6 +2,10 @@ from tokens import *
 from expression import *
 
 
+def tab(s):
+    return "".join(["\t" + v for v in s.splitlines(True)])
+
+
 def err(se):
     return "Error de parseo en línea {0}".format(se.lineno)
 
@@ -34,12 +38,51 @@ def p_instr(se):
     instr : COMMENT
           | assign SEMICOLON
           | call SEMICOLON
+          | conditional
     """
     if len(se) == 2 and (type(se[1]) is str): # COMMENT
         se[0] = Instruccion(se[1] + "\n")
+    elif len(se) == 2 and (type(se[1]) is Instruccion): # conditional
+        se[0] = Instruccion(se[1].texto)
     else: # assign SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";\n")
 
+def p_block(se):
+    """
+    block : instr
+          | LBRACE instrlist RBRACE
+    """
+    if len(se) == 2: # instr
+        se[0] = Instruccion("\n" + tab(se[1].texto))
+    else: # LBRACE instrlist RBRACE
+        se[0] = Instruccion(" {\n" + tab(se[2].texto) + "}\n")
+
+
+# CONDITIONALS
+
+def p_conditional(se):
+    """
+    conditional : IF LPARENT term RPARENT block elsebranch
+    """
+    if se[6].texto == "": # IF LPARENT term RPARENT block
+        se[0] = Instruccion("if ({}){}".format(se[3].texto, se[5].texto))
+    else: # IF LPARENT term RPARENT block ELSE block
+        # esto no puede generar una excepción IndexError, pues los terminos son
+        # no vacios y los bloques siempre terminan en '\n'
+        if se[5].texto[-2] == "}":
+            se[0] = Instruccion("if ({}){} {}".format(se[3].texto, se[5].texto.rstrip(), se[6].texto))
+        else:
+            se[0] = Instruccion("if ({}){}{}".format(se[3].texto, se[5].texto, se[6].texto))
+
+def p_elsebranch(se):
+    """
+    elsebranch :
+               | ELSE block
+    """
+    if len(se) == 1: #
+        se[0] = Instruccion("")
+    elif len(se) == 3: # ELSE ifblock
+        se[0] = Instruccion("else {}".format(se[2].texto))
 
 
 # ASSIGN
