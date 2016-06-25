@@ -37,6 +37,10 @@
 \newToken{\WHILE}{while}
 \newToken{\FOR}{for}
 \newToken{\DO}{do}
+\newToken{\SUB}{-}
+\newToken{\DIV}{/}
+\newToken{\COLON}{:}
+
 % REGLAS
 \subsubsection{Instrucciones}
 \begin{reglas}
@@ -75,26 +79,52 @@
 	\aregla{\PRINT}
 	\aregla{\LENGTH}
 \end{reglas}
-\subsubsection{Aritméticas}
+\subsubsection{Operaciones Binarias}
 \begin{reglas}
-	\regla{ARI\_A}{ARI\_A \ADD ARI\_T}
-	\aregla{ARI\_T}
-	\regla{ATI\_T}{ARI\_T \MULT ARI\_F}
-	\aregla{ARI\_F}
-	\regla{ARI\_F}{\LPARENT ARI\_A \RPARENT}
-	\aregla{TERM}
+  \regla{BINARYOP}{TERM \ADD TERM}
+  \aregla{TERM \SUB TERM}
+  \aregla{TERM \DIV TERM}
+  \aregla{TERM \MULT TERM}
 \end{reglas}
 \subsubsection{Terminos}
 \begin{reglas}
-	\regla{TERM}{\NUMBER}
-	\aregla{\STRING}
-	\aregla{\TRUE}
-	\aregla{\FALSE}
-	\aregla{\ID}
+	\regla{TERM}{\ID}
 	\aregla{\RES}
-	\aregla{\ID \DOT \ID}
-	\aregla{\ID \LBRACKET ARI\_A \RBRACKET}
+	\aregla{LITERAL}
+	\aregla{ARRAY}
+	\aregla{ARRAYMEMBER}
+	\aregla{REGISTER}
+	\aregla{REGISTERMEMBER}
+	\aregla{UNARYOP}
+	\aregla{BINARYOP}
+	\aregla{\LPARENT TERM \RPARENT}
 	\\
 	\regla{TERMLIST}{TERM}
 	\aregla{TERM \COMMA TERMLIST}
-\end{reglas}
+  \\
+	\regla{LITERAL}{\NUMBER}
+  \aregla{\STRING}
+  \aregla{\FALSE}
+  \aregla{\TRUE}
+  
+  \end{reglas}
+\subsubsection{Arreglos}
+  \begin{reglas}
+  \regla{ARRAY}{\LBRACKET TERMLIST \RBRACKET}
+  \\
+  \regla{ARRAYMEMBER}{\ID \LBRACKET TERM \RBRACKET}
+  \end{reglas}
+\subsubsection{Registros}
+  \begin{reglas}
+  \regla{REGISTER}{\LBRACE REGISTERLIST \RBRACE}
+  \\
+  \regla{REGISTERLIST}{\ID \COLON TERM}
+  \aregla{\ID \COLON TERM \COMMA REGISTERLIST}
+  \\
+  \regla{REGISTERMEMBER}{\ID \DOT \ID}
+
+  \end{reglas}
+  \subsubsection{Operaciones Unarias}
+  \begin{reglas}
+  \regla{UNARYOP}{TERM}
+  \end{reglas}
