@@ -121,21 +121,37 @@ def p_assign(se): # TODO: poner tipo a las variables
 
 def p_call(se):
     "call : funname LPARENT termlist RPARENT"
+    msg = se[1] + ": "
     if se[1] == "multiplicacionEscalar":
-        se[1] += "!"
+        if len(se[3]) != 2 and len(se[3]) != 3:
+            raise SyntaxError(msg + "se esparaban 2 o 3 parámetros")
+        if se[3][0].tipo != "ARR_NUMBER":
+            raise SyntaxError(msg + "se esperaba un arreglo numérico")
+        if se[3][1].tipo != "NUMBER":
+            raise SyntaxError(msg + "se esparaba un escalar")
+        if len(se[3]) == 3 and se[3][2].tipo != "BOOL":
+            raise SyntaxError(msg + "se esperaba un booleano")
     elif se[1] == "capitalizar":
-        se[1] += "!"
+        if len(se[3]) != 1:
+            raise SyntaxError(msg + "se esperaba un parámetro")
+        if se[3][0].tipo != "STRING":
+            raise SyntaxError(msg + "se esperaba una cadena")
     elif se[1] == "colineales":
-        se[1] += "!"
+        if len(se[3]) != 2:
+            raise SyntaxError(msg + "se esperaban 2 parámetros")
+        if se[3][0].tipo != "ARR_NUMBER" or se[3][1].tipo != "ARR_NUMBER":
+            raise SyntaxError(msg + "se esperaban arreglos numéricos")
     elif se[1] == "print":
-        se[1] += "!"
+        if len(se[3]) != 1:
+            raise SyntaxError(msg + "se esperaba un parámetro")
     elif se[1] == "length":
-        se[1] += "!"
+        if len(se[3]) != 1:
+            raise SyntaxError(msg + "se esperaba un parámetro")
+        if se[3][0].tipo != "STRING" and not se[3][0].tipo.startswith("ARR_"):
+            raise SyntaxError(msg + "se esperaba una cadena o un arreglo")
     else:
-        msg = err(se)
-        msg += " función desconocida: " + se[1]
-        raise Exception(msg)
-    se[0] = Instruccion(se[1] + "(" + ", ".join(se[3]) + ")")
+        raise SyntaxError(msg + "función desconocida")
+    se[0] = Instruccion("{}({})".format(se[1], ", ".join(t.texto for t in se[3])))
 
 def p_funname(se):
     """
@@ -145,7 +161,7 @@ def p_funname(se):
             | PRINT
             | LENGTH
     """
-    se[0] = se[1].texto
+    se[0] = se[1]
 
 # def p_call_multescalar2(se):
 #     "call : MULTESCALAR LPARENT term COMMA term RPARENT"
