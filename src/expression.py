@@ -3,6 +3,6 @@ class Termino(object):
         self.texto = texto
         self.tipo = tipo
 
-class Declaracion(object):
+class Instruccion(object):
     def __init__(self, texto):
         self.texto = texto

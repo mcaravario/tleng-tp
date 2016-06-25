@@ -13,31 +13,102 @@ def p_error(se):
         msg = err(se)
         msg += "\n\trule: " + se.type
         msg += "\n\tsubexpression value: " + se.value
+        msg += "\n\tlineno: " + se.lineno
     raise Exception(msg)
 
 
-# STMT
+# INSTR
 
-def p_stmt(se):
+def p_instrlsit(se):
     """
-    stmt :
-         | COMMENT stmt
-         | assign SEMICOLON stmt
-         | call SEMICOLON stmt
+    instrlist : instr
+              | instr instrlist
     """
-    if len(se) == 1: # vacio
-        se[0] = Declaracion("")
-    elif len(se) == 3: # comentario
-        se[0] = Declaracion(se[1] + "\n" + se[2].texto)
-    elif len(se) == 4: # assign | call
-        se[0] = Declaracion(se[1].texto + ";\n" + se[3].texto)
+    if len(se) == 2: # instr
+        se[0] = se[1]
+    else:
+        se[0] = Instruccion(se[1].texto + se[2].texto)
+
+def p_instr(se):
+    """
+    instr : COMMENT
+          | assign SEMICOLON
+          | call SEMICOLON
+    """
+    if len(se) == 2 and (type(se[1]) is str): # COMMENT
+        se[0] = Instruccion(se[1] + "\n")
+    else: # assign SEMICOLON | call SEMICOLON
+        se[0] = Instruccion(se[1].texto + ";\n")
+
 
 
 # ASSIGN
 
 def p_assign(se):
     "assign : ID ASSIGN term"
-    se[0] = Declaracion(se[1] + " = " + se[3].texto)
+    se[0] = Instruccion(se[1] + " = " + se[3].texto)
+
+
+# CALL
+
+def p_call(se):
+    "call : funname LPARENT termlist RPARENT"
+    if se[1] == "multiplicacionEscalar":
+        se[1] += "!"
+    elif se[1] == "capitalizar":
+        se[1] += "!"
+    elif se[1] == "colineales":
+        se[1] += "!"
+    elif se[1] == "print":
+        se[1] += "!"
+    elif se[1] == "length":
+        se[1] += "!"
+    else:
+        msg = err(se)
+        msg += " función desconocida: " + se[1]
+        raise Exception(msg)
+    se[0] = Instruccion(se[1] + "(" + ", ".join(se[3]) + ")")
+
+def p_funname(se):
+    """
+    funname : MULTESCALAR
+            | CAPITALIZAR
+            | COLINEALES
+            | PRINT
+            | LENGTH
+    """
+    se[0] = se[1].texto
+
+# def p_call_multescalar2(se):
+#     "call : MULTESCALAR LPARENT term COMMA term RPARENT"
+#     print("")
+#     print(se.__dict__)
+#     print("")
+#     if se[3].tipo != "ARR_NUMBER":
+#         msg = err(se)
+#         msg += " se esperaba un arreglo numérico en llamado a " + se[1]
+#         raise Exception(msg)
+#     if se[5].tipo != "NUMBER":
+#         msg = err(se)
+#         msg += " se esperaba un número en llamado a " + se[1]
+#         raise Exception(msg)
+#     se[0] = Instruccion("multiplicacionEscalar(" + se[3].texto + ", " + se[5].texto + ")")
+
+# def p_call_multescalar3(se):
+#     "call : MULTESCALAR LPARENT term COMMA term COMMA term RPARENT"
+#     if se[3].tipo != "ARR_NUMBER":
+#         msg = err(se)
+#         msg += " se esperaba un arreglo numérico en llamado a " + se[1]
+#         raise Exception(msg)
+#     if se[5].tipo != "NUMBER":
+#         msg = err(se)
+#         msg += " se esperaba un número en llamado a " + se[1]
+#         raise Exception(msg)
+#     if se[7].tipo != "BOOL":
+#         msg = err(se)
+#         msg += " se esperaba un número en llamado a " + se[1]
+#         raise Exception(msg)
+#     se[0] = Instruccion(se[1] + "(" + se[3].texto + ", " + se[5].texto + ")")
 
 
 # ARI
@@ -104,25 +175,21 @@ def p_term_paren(se):
     se[0] = Termino("(" + se[2].texto + ")", se[2].tipo)
 
 def p_term_index(se):
-    "term : ID LBRACKET ari_a RBRACKET"
+    "term : ID LBRACKET term RBRACKET"
     se[0] = Termino(se[1] + "[" + se[3].texto + "]", "UNKNOWN")
 
 def p_termlist(se):
     """
     termlist :
              | term
-             | termchain termlist
+             | term COMMA termlist
     """
     if len(se) == 1:
         se[0] = []
     elif len(se) == 2:
         se[0] = [se[1]]
-    elif len(se) == 3:
-        se[0] = [se[1]] + se[2]
-
-def p_termchain(se):
-    "termchain : term COMMA"
-    se[0] = se[1]
+    elif len(se) == 4:
+        se[0] = [se[1]] + se[3]
 
 def p_term_array(se):
     "term : LBRACKET termlist RBRACKET"
