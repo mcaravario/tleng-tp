@@ -112,7 +112,7 @@ def p_loop(se):
 
 # ASSIGN
 
-def p_assign(se):
+def p_assign(se): # TODO: poner tipo a las variables
     "assign : ID ASSIGN term"
     se[0] = Instruccion(se[1] + " = " + se[3].texto)
 
@@ -210,41 +210,31 @@ def p_funname(se):
 
 # TERM
 
-def p_term_number(se):
-    "term : NUMBER"
-    se[0] = Termino(se[1], "NUMBER")
+def p_term(se):
+    """
+    term : ID
+         | RES
+         | literal
+         | array
+         | arraymember
+         | LPARENT term RPARENT
+    """
+    if len(se) == 3: # LPARENT term RPARENT
+        se[0] = Termino("({})".format(se[2].texto), se[2].tipo)
+    elif type(se[1]) is Termino: # literal | unaryop | binaryop | register
+                                 # | registermember| array | arraymember
+        se[0] = se[1]
+    else: # ID | RES
+        se[0] = Termino(se[1], "UNKNOWN")
 
-def p_term_string(se):
-    "term : STRING"
-    se[0] = Termino(se[1], "STRING")
-
-def p_term_true(se):
-    "term : TRUE"
-    se[0] = Termino(se[1], "BOOL")
-
-def p_term_false(se):
-    "term : FALSE"
-    se[0] = Termino(se[1], "BOOL")
-
-def p_term_id(se):
-    "term : ID"
-    se[0] = Termino(se[1], "UNKNOWN")
-
-def p_term_res(se):
-    "term : RES"
-    se[0] = Termino(se[1], "UNKNOWN")
-
-def p_term_register(se):
-    "term : ID DOT ID"
-    se[0] = Termino(se[1] + "." + se[3], "UNKNOWN")
-
-def p_term_paren(se):
-    "term : LPARENT term RPARENT"
-    se[0] = Termino("(" + se[2].texto + ")", se[2].tipo)
-
-def p_term_index(se):
-    "term : ID LBRACKET term RBRACKET"
-    se[0] = Termino(se[1] + "[" + se[3].texto + "]", "UNKNOWN")
+def p_literal(se):
+    """
+    literal : NUMBER
+            | STRING
+            | FALSE
+            | TRUE
+    """
+    se[0] = Termino(se[1][0], se[1][1])
 
 def p_termlist(se):
     """
@@ -252,18 +242,23 @@ def p_termlist(se):
              | term
              | term COMMA termlist
     """
-    if len(se) == 1:
+    if len(se) == 1: #
         se[0] = []
-    elif len(se) == 2:
+    elif len(se) == 2: # term
         se[0] = [se[1]]
-    elif len(se) == 4:
+    elif len(se) == 4: # term COMMA termlist
         se[0] = [se[1]] + se[3]
 
-def p_term_array(se):
-    "term : LBRACKET termlist RBRACKET"
-    if len(se[2]) == 0:
+
+# ARRAY
+
+def p_array(se):
+    """
+    array : LBRACKET termlist RBRACKET
+    """
+    if len(se[2]) == 0: # LBRACKET RBRACKET
         tipo = "UNKNOWN"
-    else:
+    else: # LBRACKET termlist RBRACKET
         tipo = se[2][0].tipo
         if any(e.tipo != tipo for e in se[2]):
             msg = err(se)
@@ -271,7 +266,13 @@ def p_term_array(se):
             raise Exception(msg)
     se[0] = Termino("[" + ", ".join(e.texto for e in se[2]) + "]", "ARR_" + tipo)
 
-# def p_expression_algo(se):
-#     "expression : term"
-#     se[0] = se[1]
-
+def p_arraymember(se):
+    """
+    arraymember : ID LBRACKET term RBRACKET
+    """
+    if se[2].tipo != "NUMBER":
+        msg = err(se)
+        msg += " el índice del arreglo no es numérico."
+        raise Exception(msg)
+    # TODO: determinar tipo en base al ID sobre el que se usa
+    se[0] = Termino("{}[{}]".format(se[1], se[3].texto), "UNKNOWN")
