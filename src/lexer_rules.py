@@ -28,7 +28,7 @@ t_STRING = r"\"[^\"]*\""
 
 t_SEMICOLON = r";"
 
-t_TERNCOLON = r":"
+t_COLON = r":"
 
 t_RBRACE = r"}"
 
