@@ -22,6 +22,7 @@ tokens = [
     'ID',
     'FOR',
     'SEMICOLON',
+    'COLON',
     'COMMENT',
     'RBRACE',
     'LBRACE',
@@ -60,8 +61,7 @@ tokens = [
     'GT',
     'LNOT', #!
     'LNOTEQ',  #!=
-    'TERNQUESTION',
-    'TERNCOLON',
+    'QUESTION',
     'DOT',
     'STRING',
     'RES',

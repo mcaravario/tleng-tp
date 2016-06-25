@@ -28,6 +28,8 @@ t_STRING = r"\"[^\"]*\""
 
 t_SEMICOLON = r";"
 
+t_TERNCOLON = r":"
+
 t_RBRACE = r"}"
 
 t_LBRACE = r"{"
@@ -84,9 +86,7 @@ t_LNOT = r"!"
 
 t_LNOTEQ = r"!="
 
-t_TERNQUESTION = r"\?"
-
-t_TERNCOLON = r":"
+t_QUESTION = r"\?"
 
 t_DOT = r"\."
 
