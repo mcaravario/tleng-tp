@@ -15,15 +15,16 @@ def t_NUMBER(tok):
     tok.value = tok.value
     return tok
 
-t_ignore_WHITESPACES = r"[ \t]+"
+def t_ID(tok):
+    r"[a-zA-Z][a-zA-Z0-9_]*"
+    tok.type = reserved.get(tok.value, "ID")
+    return tok
 
-t_ID = r"[a-zA-Z][a-zA-Z_0-9]*"
+t_ignore_WHITESPACES = r"[ \t]+"
 
 t_COMMENT = r"\#.*"
 
 t_STRING = r"\"[^\"]*\""
-
-t_FOR = r"for"
 
 t_SEMICOLON = r";"
 
@@ -35,27 +36,9 @@ t_RBRACKET = r"\]"
 
 t_LBRACKET = r"\["
 
-t_IF = r"if"
-
 t_RPARENT = r"\)"
 
 t_LPARENT = r"\("
-
-t_ELSE = r"else"
-
-t_DO = r"do"
-
-t_WHILE = r"while"
-
-t_MULTESCALAR = r"multiplicacionEscalar"
-
-t_COLINEALES = r"colineales"
-
-t_CAPITALIZAR = r"capitalizar"
-
-t_PRINT = r"print"
-
-t_LENGTH = r"length"
 
 t_ADD = r"\+"
 
@@ -106,17 +89,5 @@ t_TERNQUESTION = r"\?"
 t_TERNCOLON = r":"
 
 t_DOT = r"\."
-
-t_RES = r"res"
-
-t_BEGIN = r"begin"
-
-t_END = r"end"
-
-t_RETURN = r"return"
-
-t_TRUE = r"true"
-
-t_FALSE = r"false"
 
 t_COMMA = r","

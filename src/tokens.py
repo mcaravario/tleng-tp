@@ -1,3 +1,22 @@
+reserved = {
+    "for": "FOR",
+    "if": "IF",
+    "else": "ELSE",
+    "do": "DO",
+    "while": "WHILE",
+    "multiplicacionEscalar": "MULTESCALAR",
+    "capitalizar": "CAPITALIZAR",
+    "colineales": "COLINEALES",
+    "print": "PRINT",
+    "length": "LENGTH",
+    "res": "RES",
+    "begin": "BEGIN",
+    "end": "END",
+    "return": "RETURN",
+    "true": "TRUE",
+    "false": "FALSE",
+}
+
 tokens = [
     'NUMBER',
     'ID',
@@ -54,4 +73,4 @@ tokens = [
     'COMMA',
     'WHITESPACES',
     'NEWLINE'
-]
+] + list(reserved.values())
