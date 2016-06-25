@@ -13,6 +13,7 @@ qwe=1.123;asd=["qwe","zxc"]; # mira! comentario!; esto="no anda"; # comentario d
 zxc=0.0;
 a=[];
 b=[1, 1.0];
+c={marto:"es",puto:true};
 if(a)qwe=1.0;qwe=2.0;
 if(a)qwe=1.0;else zxc=1.0;
 if(a){qwe=1.0;zxc=1;if(b)qwe=2.0;}else qwe=0.0;

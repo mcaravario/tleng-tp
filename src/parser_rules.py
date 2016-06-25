@@ -217,6 +217,8 @@ def p_term(se):
          | literal
          | array
          | arraymember
+         | register
+         | registermember
          | LPARENT term RPARENT
     """
     if len(se) == 3: # LPARENT term RPARENT
@@ -276,3 +278,33 @@ def p_arraymember(se):
         raise Exception(msg)
     # TODO: determinar tipo en base al ID sobre el que se usa
     se[0] = Termino("{}[{}]".format(se[1], se[3].texto), "UNKNOWN")
+
+
+# REGISTER
+
+def p_register(se):
+    """
+    register : LBRACE registerlist RBRACE
+    """
+    se[0] = Termino("{ " + ", ".join(e for e in se[2]) + " }", "REGISTER")
+
+def p_registerlist(se): # TODO: sacar el shift-reduce?
+    """
+    registerlist :
+                 | ID COLON term
+                 | ID COLON term COMMA registerlist
+    """
+    if len(se) == 1: #
+        se[0] = []
+    elif len(se) == 4: # ID COLON term
+        se[0] = ["{}: {}".format(se[1], se[3].texto)]
+    else: # ID COLON term COMMA registerlist
+        se[0] = ["{}: {}".format(se[1], se[3].texto)] + se[5]
+
+def p_registermember(se):
+    """
+    registermember : ID DOT ID
+    """
+    # TODO: determinar tipo en base al ID sobre el que se usa y el ID con el
+    # cual se accede
+    se[0] = Termino("{}.{}".format(se[1], se[3]), "UNKNOWN")
