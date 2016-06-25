@@ -26,7 +26,13 @@ do qwe=2.0; while(i);
 do{qwe=2.0;asd=1.0;}while(i);
 # c=[1, "qwe"];
 # a={"qwe": 123, "zxc": "qwerty"};
-
+multiplicacionEscalar([1.0],1);
+multiplicacionEscalar([1.0],1,true);
+capitalizar("qwe");
+colineales([1],[2]);
+print("qwe");
+length([1]);
+length("");
 """
 
 # lexer.input(text)
