@@ -22,8 +22,8 @@
 \newToken{\RPARENT}{)}
 \newToken{\LBRACKET}{[}
 \newToken{\RBRACKET}{]}
-\newToken{\LBRACE}{\left\lbrace}
-\newToken{\RBRACE}{\right\rbrace}
+\newToken{\LBRACE}{\{}
+\newToken{\RBRACE}{\}}
 \newToken{\MULTESCALAR}{multiplicacionEscalar}
 \newToken{\CAPITALIZAR}{capitalizar}
 \newToken{\COLINEALES}{colineales}
@@ -32,13 +32,39 @@
 \newToken{\ADD}{+}
 \newToken{\MULT}{*}
 \newToken{\COMMA}{,}
+\newToken{\IF}{if}
+\newToken{\ELSE}{else}
+\newToken{\WHILE}{while}
+\newToken{\FOR}{for}
+\newToken{\DO}{do}
 % REGLAS
-\subsubsection{Asignaciones y llamados a funciones}
+\subsubsection{Instrucciones}
 \begin{reglas}
-	\regla{STMT}{\COMMENT STMT}
-	\aregla{ASSIGN \SEMICOLON STMT}
-	\aregla{CALL \SEMICOLON STMT}
+	\regla{INSTRLIST}{INSTR}
+	\aregla{INSTR INSTRLIST}
+	\regla{INSTR}{\COMMENT}
+	\aregla{ASSIGN \SEMICOLON}
+	\aregla{CALL \SEMICOLON}
+	\aregla{CONDITIONAL}
+	\aregla{LOOP}
+\end{reglas}
+\subsubsection{Bloques de código}
+\begin{reglas}
+	\regla{BLOCK}{INSTR}
+	\aregla{\LBRACE INSTRLIST \RBRACE}
+\end{reglas}
+\subsubsection{Condicionales y Ciclos}
+\begin{reglas}
+	\regla{CONDITIONAL}{\IF \LPARENT TERM \RPARENT BLOCK ELSEBRANCH}
+	\regla{ELSEBRANCH}{$\lambda$}
+	\aregla{\ELSE BLOCK}
 	\\
+	\regla{LOOP}{\FOR \LPARENT ASSIGN \SEMICOLON TERM \SEMICOLON TERM \RPARENT BLOCK}
+	\aregla{\WHILE \LPARENT TERM \RPARENT BLOCK}
+	\aregla{\DO BLOCK \WHILE \LPARENT TERM \RPARENT \SEMICOLON}
+\end{reglas}
+\subsubsection{Asignaciones y llamadas a funciones}
+\begin{reglas}
 	\regla{ASSIGN}{\ID ASSIGN TERM}
 	\\
 	\regla{CALL}{FUNNAME \LPARENT TERMLIST \RPARENT}
