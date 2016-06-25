@@ -219,6 +219,8 @@ def p_term(se):
          | arraymember
          | register
          | registermember
+         | unaryop
+         | binaryop
          | LPARENT term RPARENT
     """
     if len(se) == 3: # LPARENT term RPARENT
@@ -308,3 +310,21 @@ def p_registermember(se):
     # TODO: determinar tipo en base al ID sobre el que se usa y el ID con el
     # cual se accede
     se[0] = Termino("{}.{}".format(se[1], se[3]), "UNKNOWN")
+
+
+# UNARYOP
+
+def p_unaryop(se): # TODO: hacer algo
+    """
+    unaryop : term
+    """
+    # quizas unaryop : op term
+
+
+# BINARYOP
+
+def p_binaryop(se): # TODO: hacer algo
+    """
+    binaryop : term
+    """
+    # quizas binaryop : term op term
