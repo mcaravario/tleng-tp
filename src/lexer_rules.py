@@ -12,19 +12,24 @@ def t_NEWLINE(tok):
 
 def t_NUMBER(tok):
     r"[0-9]+(\.[0-9]+)?"
-    tok.value = tok.value
+    tok.value = (tok.value, "NUMBER")
+    return tok
+
+def t_STRING(tok):
+    r"\"[^\"]*\""
+    tok.value = (tok.value, "STRING")
     return tok
 
 def t_ID(tok):
     r"[a-zA-Z][a-zA-Z0-9_]*"
     tok.type = reserved.get(tok.value, "ID")
+    if tok.type == "TRUE" or tok.type == "FALSE":
+        tok.value = (tok.value, "BOOL")
     return tok
 
 t_ignore_WHITESPACES = r"[ \t]+"
 
 t_COMMENT = r"\#.*"
-
-t_STRING = r"\"[^\"]*\""
 
 t_SEMICOLON = r";"
 
