@@ -212,8 +212,7 @@ def p_literal(se):
 
 def p_expressionlist(se):
     """
-    expressionlist :
-                   | expression
+    expressionlist : expression
                    | expression COMMA expressionlist
     """
     if len(se) == 2: # expression
