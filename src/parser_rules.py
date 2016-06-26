@@ -17,7 +17,7 @@ def p_error(se):
         msg = err(se)
         msg += "\n\trule: " + se.type
         msg += "\n\tsubexpression value: " + se.value
-        msg += "\n\tlineno: " + se.lineno
+        msg += "\n\tlineno: " + str(se.lineno)
     raise Exception(msg)
 
 
