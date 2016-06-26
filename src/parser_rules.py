@@ -302,8 +302,9 @@ def p_unaryop(se): # TODO: hacer algo
 
 
 # BINARYOP
+# TODO: <, <=, >, >=, quizás algo más
 
-def p_binaryop(se): # TODO: hacer algo
+def p_binaryop(se):
     """
     binaryop : expression ADD term
              | expression SUB term
