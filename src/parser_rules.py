@@ -139,33 +139,33 @@ def p_call(se):
     msg = se[1] + ": "
     if se[1] == "multiplicacionEscalar":
         if len(se[3]) != 2 and len(se[3]) != 3:
-            raise SyntaxError(msg + "se esparaban 2 o 3 parámetros")
+            raise Exception(msg + "se esparaban 2 o 3 parámetros")
         if se[3][0].tipo != "ARR_NUMBER":
-            raise SyntaxError(msg + "se esperaba un arreglo numérico")
+            raise Exception(msg + "se esperaba un arreglo numérico")
         if se[3][1].tipo != "NUMBER":
-            raise SyntaxError(msg + "se esparaba un escalar")
+            raise Exception(msg + "se esparaba un escalar")
         if len(se[3]) == 3 and se[3][2].tipo != "BOOL":
-            raise SyntaxError(msg + "se esperaba un booleano")
+            raise Exception(msg + "se esperaba un booleano")
     elif se[1] == "capitalizar":
         if len(se[3]) != 1:
-            raise SyntaxError(msg + "se esperaba un parámetro")
+            raise Exception(msg + "se esperaba un parámetro")
         if se[3][0].tipo != "STRING":
-            raise SyntaxError(msg + "se esperaba una cadena")
+            raise Exception(msg + "se esperaba una cadena")
     elif se[1] == "colineales":
         if len(se[3]) != 2:
-            raise SyntaxError(msg + "se esperaban 2 parámetros")
+            raise Exception(msg + "se esperaban 2 parámetros")
         if se[3][0].tipo != "ARR_NUMBER" or se[3][1].tipo != "ARR_NUMBER":
-            raise SyntaxError(msg + "se esperaban arreglos numéricos")
+            raise Exception(msg + "se esperaban arreglos numéricos")
     elif se[1] == "print":
         if len(se[3]) != 1:
-            raise SyntaxError(msg + "se esperaba un parámetro")
+            raise Exception(msg + "se esperaba un parámetro")
     elif se[1] == "length":
         if len(se[3]) != 1:
-            raise SyntaxError(msg + "se esperaba un parámetro")
+            raise Exception(msg + "se esperaba un parámetro")
         if se[3][0].tipo != "STRING" and not se[3][0].tipo.startswith("ARR_"):
-            raise SyntaxError(msg + "se esperaba una cadena o un arreglo")
+            raise Exception(msg + "se esperaba una cadena o un arreglo")
     else:
-        raise SyntaxError(msg + "función desconocida")
+        raise Exception(msg + "función desconocida")
     se[0] = Instruccion("{}({})".format(se[1], ", ".join(t.texto for t in se[3])))
 
 def p_funname(se):
