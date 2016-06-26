@@ -71,12 +71,6 @@ t_DIVEQ = r"/="
 
 t_POW = r"\^"
 
-t_AND = r"AND"
-
-t_OR = r"OR"
-
-t_NOT = r"NOT"
-
 t_MOD = r"%"
 
 t_LT = r"<"
