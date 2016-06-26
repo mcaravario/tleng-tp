@@ -1,14 +1,6 @@
 from tokens import *
 from expression import *
 
-precedence = (
-    ('left', 'LEQ', 'GEQ', 'LT', 'GT'),
-    ('left', 'EQUAL', 'LNOTEQ'),
-    ('left', 'ADD', 'SUB'),
-    ('left', 'MULT', 'DIV'),
-    ('left', 'MOD', 'POW'),
-    ('left', 'AND', 'OR')
-)
 
 type_by_id = {}
 register_types = {}
@@ -297,52 +289,55 @@ def p_registermember(se):
 
 def p_unaryop(se): # TODO: hacer algo
     """
-    unaryop : term
+    unaryop : expression
     """
-    # quizas unaryop : op term
+    # quizas unaryop : op expression
 
 
 # BINARYOP
 
 def p_binaryop(se): # TODO: hacer algo
     """
-    binaryop : term ADD term
-             | term SUB term
-             | term MULT term
-             | term DIV term
-             | term MOD term
-             | term POW term
-             | term AND term
-             | term OR term
-             | term LT term
-             | term LEQ term
-             | term GT term
-             | term GEQ term
-             | term EQUAL term
-             | term LNOTEQ term
+    binaryop : expression ADD term
+             | expression SUB term
+             | term
     """
-    type_res = 'UNKNOWN'
-    if se[2] == '+': # ADD
-        if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
-            type_res = 'NUMBER'
-        elif se[1].tipo == 'STRING' and se[3].tipo == 'STRING':
-            type_res = 'STRING'
-    elif se[2] in ['-', '*', '/', '%', '^']: # SUB | MULT | DIV | MOD | POW
-        if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
-            type_res = 'NUMBER'
-    elif se[2] in ['AND', 'OR']: # AND | OR
-        if se[1].tipo == 'BOOL' and se[3].tipo == 'BOOL':
-            type_res = 'BOOL'
-    elif se[2] in ['<', '<=', '>', '>=']: # LT | LEQ | GT | GEQ
-        if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
-            type_res = 'NUMBER'
-    else: # EQUAL | LNOTEQUAL
-        if se[1].tipo == se[3].tipo:
-            type_res = se[1].tipo
+    if len(se) == 2:
+        se[0] = se[1]
+    else:
+        msg = "{}({}): ".format(lineerr(se.lineno(2)), se[2])
+        if se[1].tipo != se[3].tipo:
+            raise Exception(msg + "los tipos no coinciden")
+        elif se[2] == "+" and se[1].tipo not in ["NUMBER", "STRING"]:
+                raise Exception(msg + "se esparaban números o cadenas, se encontró " + se[1].tipo)
+        elif se[2] == "-" and se[1].tipo != "NUMBER":
+            raise Exception(msg + "se esperaban números")
+        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), "NUMBER")
 
-    if type_res == 'UNKNOWN':
-        msg = lineerr(se.lineno(2))
-        msg += " tipos incompatibles para " + se[2]
-        raise Exception(msg)
+def p_term(se):
+    """
+    term : term MULT factor
+         | term DIV factor
+         | term MOD factor
+         | term POW factor
+         | factor
+    """
+    if len(se) == 2:
+        se[0] = se[1]
+    else:
+        msg = "{}({}): ".format(lineerr(se.lineno(2)), se[2])
+        if se[1].tipo != se[3].tipo:
+            raise Exception(msg + "los tipos no coinciden")
+        elif se[1].tipo != "NUMBER":
+            raise Exception(msg + "se esperaban números")
+        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
-    se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), type_res)
+def p_factor(se):
+    """
+    factor : literal
+           | LPARENT expression RPARENT
+    """
+    if len(se) == 2:
+        se[0] = se[1]
+    else:
+        se[0] = Termino("({})".format(se[2]), "NUMBER")
