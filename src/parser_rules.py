@@ -18,15 +18,15 @@ def tab(s):
     return "".join(["\t" + v for v in s.splitlines(True)])
 
 
-def err(se):
-    return "Error de parseo en línea {0}".format(se.lineno)
+def lineerr(n):
+    return "Error de parseo en línea {}: ".format(n)
 
 
 def p_error(se):
     if se is None:
         msg = "Parsing error."
     else:
-        msg = err(se)
+        msg = lineerr(se.lineno)
         msg += "\n\trule: " + se.type
         msg += "\n\tsubexpression value: " + se.value
         msg += "\n\tlineno: " + str(se.lineno)
@@ -296,7 +296,7 @@ def p_array(se):
     else: # LBRACKET termlist RBRACKET
         tipo = se[2][0].tipo
         if any(e.tipo != tipo for e in se[2]):
-            msg = err(se)
+            msg = lineerr(se.lineno(1))
             msg += " los elementos del arreglo no son del mismo tipo."
             raise Exception(msg)
     se[0] = Termino("[" + ", ".join(e.texto for e in se[2]) + "]", "ARR_" + tipo)
@@ -306,7 +306,7 @@ def p_arraymember(se):
     arraymember : ID LBRACKET term RBRACKET
     """
     if se[2].tipo != "NUMBER":
-        msg = err(se)
+        msg = lineerr(se.lineno(1))
         msg += " el índice del arreglo no es numérico."
         raise Exception(msg)
     # TODO: determinar tipo en base al ID sobre el que se usa
@@ -396,7 +396,7 @@ def p_binaryop(se): # TODO: hacer algo
             type_res = se[1].tipo
 
     if type_res == 'UNKNOWN':
-        msg = err(se)
+        msg = lineerr(se.lineno(2))
         msg += " tipos incompatibles para " + se[2]
         raise Exception(msg)
 
