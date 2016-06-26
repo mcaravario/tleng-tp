@@ -326,18 +326,21 @@ def p_binaryop(se): # TODO: hacer algo
              | term LNOTEQ term
     """
     type_res = 'UNKNOWN'
-    if se[2] == '+':
+    if se[2] == '+': # ADD
         if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
             type_res = 'NUMBER'
         elif se[1].tipo == 'STRING' and se[3].tipo == 'STRING':
             type_res = 'STRING'
-    elif se[2] == '-' or se[2] == '*' or se[2] == '/' or se[2] == '%' or se[2] == '^':
+    elif se[2] in ['-', '*', '/', '%', '^']: # SUB | MULT | DIV | MOD | POW
         if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
             type_res = 'NUMBER'
-    elif se[2] == 'AND' or se[2] == 'OR':
+    elif se[2] in ['AND', 'OR']: # AND | OR
         if se[1].tipo == 'BOOL' and se[3].tipo == 'BOOL':
             type_res = 'BOOL'
-    else:
+    elif se[2] in ['<', '<=', '>', '>=']: # LT | LEQ | GT | GEQ
+        if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
+            type_res = 'NUMBER'
+    else: # EQUAL | LNOTEQUAL
         if se[1].tipo == se[3].tipo:
             type_res = se[1].tipo
 
