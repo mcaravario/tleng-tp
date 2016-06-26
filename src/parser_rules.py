@@ -241,7 +241,7 @@ def p_term(se):
          | binaryop
          | LPARENT term RPARENT
     """
-    if len(se) == 3: # LPARENT term RPARENT
+    if len(se) == 4: # LPARENT term RPARENT
         se[0] = Termino("({})".format(se[2].texto), se[2].tipo)
     elif type(se[1]) is Termino: # literal | unaryop | binaryop | register
                                  # | registermember| array | arraymember
