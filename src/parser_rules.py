@@ -2,6 +2,8 @@ from tokens import *
 from expression import *
 
 type_by_id = {}
+register_types = {}
+
 
 def tab(s):
     return "".join(["\t" + v for v in s.splitlines(True)])
@@ -117,6 +119,8 @@ def p_assign(se):
     "assign : ID ASSIGN term"
     se[0] = Instruccion(se[1] + " = " + se[3].texto)
     type_by_id[se[1]] = se[3].tipo
+    if(se[3].tipo == 'REGISTER'):
+        register_types[se[1]] = se[3].tiposreg
 
 
 # CALL
@@ -306,7 +310,10 @@ def p_register(se):
     """
     register : LBRACE registerlist RBRACE
     """
-    se[0] = Termino("{ " + ", ".join(e for e in se[2]) + " }", "REGISTER")
+    tiposreg = {}
+    for e in se[2]:
+        tiposreg[e[0]] = e[2]
+    se[0] = Termino("{ " + ", ".join(e[1] for e in se[2]) + " }", "REGISTER", tiposreg)
 
 def p_registerlist(se): # TODO: sacar el shift-reduce?
     """
@@ -317,9 +324,9 @@ def p_registerlist(se): # TODO: sacar el shift-reduce?
     if len(se) == 1: #
         se[0] = []
     elif len(se) == 4: # ID COLON term
-        se[0] = ["{}: {}".format(se[1], se[3].texto)]
+        se[0] = [(se[1], "{}: {}".format(se[1], se[3].texto), se[3].tipo)]
     else: # ID COLON term COMMA registerlist
-        se[0] = ["{}: {}".format(se[1], se[3].texto)] + se[5]
+        se[0] = [(se[1], "{}: {}".format(se[1], se[3].texto), se[3].tipo)] + se[5]
 
 def p_registermember(se):
     """
@@ -327,7 +334,12 @@ def p_registermember(se):
     """
     # TODO: determinar tipo en base al ID sobre el que se usa y el ID con el
     # cual se accede
-    se[0] = Termino("{}.{}".format(se[1], se[3]), "UNKNOWN")
+    reg = register_types.get(se[1])
+    if reg is None:
+        tipo = "UNKOWN"
+    else:
+        tipo = reg.get(se[3],"UNKOWN")
+    se[0] = Termino("{}.{}".format(se[1], se[3]), tipo)
 
 
 # UNARYOP
