@@ -13,7 +13,7 @@ qwe=1.123;asd=["qwe","zxc"]; # mira! comentario!; esto="no anda"; # comentario d
 zxc=true AND true OR false;
 a=[];
 b=[1, 1.0];
-c={marto:"es",puto: TRUE, edad: 10 + 13};
+c={marto:"es",puto: 2 < 3 == 3 <= 5 >= 5 > 4 != 7 , edad: 10 + 13};
 if(a)qwe=2^3+4;qwe=(2.0*4+3.0)^3;
 if(a)qwe=1.0/3;else zxc=1.0;
 if(a){qwe=1.0;zxc=1;if(b)qwe=2.0;}else qwe=0.0;

@@ -2,6 +2,8 @@ from tokens import *
 from expression import *
 
 precedence = (
+    ('left', 'LEQ', 'GEQ', 'LT', 'GT'),
+    ('left', 'EQUAL', 'LNOTEQ'),
     ('left', 'ADD', 'SUB'),
     ('left', 'MULT', 'DIV'),
     ('left', 'MOD', 'POW'),
@@ -370,24 +372,32 @@ def p_binaryop(se): # TODO: hacer algo
              | term POW term
              | term AND term
              | term OR term
+             | term LT term
+             | term LEQ term
+             | term GT term
+             | term GEQ term
+             | term EQUAL term
+             | term LNOTEQ term
     """
     type_res = 'UNKNOWN'
-    if(se[2] == '+'):
-        if(se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER'):
+    if se[2] == '+':
+        if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
             type_res = 'NUMBER'
-        elif(se[1].tipo == 'STRING' and se[3].tipo == 'STRING'):
+        elif se[1].tipo == 'STRING' and se[3].tipo == 'STRING':
             type_res = 'STRING'
-    elif(se[2] == '-' or se[2] == '*' or se[2] == '/' or se[2] == '%' or se[2] == '^'):
-        if(se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER'):
+    elif se[2] == '-' or se[2] == '*' or se[2] == '/' or se[2] == '%' or se[2] == '^':
+        if se[1].tipo == 'NUMBER' and se[3].tipo == 'NUMBER':
             type_res = 'NUMBER'
-    elif(se[2] == 'AND' or se[2] == 'OR'):
-        if(se[1].tipo == 'BOOL' and se[3].tipo == 'BOOL'):
+    elif se[2] == 'AND' or se[2] == 'OR':
+        if se[1].tipo == 'BOOL' and se[3].tipo == 'BOOL':
             type_res = 'BOOL'
+    else:
+        if se[1].tipo == se[3].tipo:
+            type_res = se[1].tipo
 
-    if(type_res == 'UNKNOWN'):
+    if type_res == 'UNKNOWN':
         msg = err(se)
         msg += " tipos incompatibles para " + se[2]
-        msg += se[1].tipo + "," + se[3].tipo + "\n"
         raise Exception(msg)
 
     se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), type_res)
