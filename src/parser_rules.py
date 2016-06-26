@@ -1,6 +1,7 @@
 from tokens import *
 from expression import *
 
+type_by_id = {}
 
 def tab(s):
     return "".join(["\t" + v for v in s.splitlines(True)])
@@ -112,9 +113,10 @@ def p_loop(se):
 
 # ASSIGN
 
-def p_assign(se): # TODO: poner tipo a las variables
+def p_assign(se):
     "assign : ID ASSIGN term"
     se[0] = Instruccion(se[1] + " = " + se[3].texto)
+    type_by_id[se[1]] = se[3].tipo
 
 
 # CALL
