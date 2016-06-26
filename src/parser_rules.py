@@ -175,35 +175,6 @@ def p_call(se):
     se[0] = Instruccion("{}({})".format(se[1], ", ".join(t.texto for t in se[3])))
 
 
-# ARI
-
-# def p_ari_add(se):
-#     "ari_a : ari_a ADD ari_t"
-#     if se[1].tipo != se[3].tipo:
-#         raise Exception("NO ESTAN BIEN LOS TIPOS")
-#     se[0] = Termino(se[1].texto + " + " + se[3].texto, "INT")
-
-# def p_ari_a2t(se):
-#     "ari_a : ari_t"
-#     se[0] = se[1]
-
-# def p_ari_mult(se):
-#     "ari_t : ari_t MULT ari_f"
-#     se[0] = Termino(se[1].texto + " * " + se[3].texto, "INT")
-
-# def p_ari_t2f(se):
-#     "ari_t : ari_f"
-#     se[0] = se[1]
-
-# def p_ari_f2term(se):
-#     "ari_f : term"
-#     se[0] = se[1]
-
-# def p_ari_parens(se):
-#     "ari_f : LPARENT ari_a RPARENT"
-#     se[0] = Termino("(" + se[2].texto + ")", "INT")
-
-
 # TERM
 
 def p_term(se):
