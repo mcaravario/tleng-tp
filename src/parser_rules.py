@@ -218,9 +218,19 @@ def p_term(se):
          | unaryop
          | binaryop
          | LPARENT term RPARENT
+         | term QUESTION term COLON term
     """
     if len(se) == 4: # LPARENT term RPARENT
         se[0] = Termino("({})".format(se[2].texto), se[2].tipo)
+    elif len(se) == 6: # term QUESTION term COLON term
+        msg = lineerr(se.lineno(2))
+        if se[1].tipo != "BOOL":
+            msg += "se esperaba una expresión booleana"
+            raise Exception(msg)
+        elif se[3].tipo != se[5].tipo:
+            msg += "las ramas del operador ?: deben tener el mismo tipo"
+            raise Exception(msg)
+        se[0] = Termino("{} ? {} : {}".format(se[1].texto, se[3].texto, se[5].texto), se[3].tipo)
     elif type(se[1]) is Termino: # literal | unaryop | binaryop | register
                                  # | registermember| array | arraymember
         se[0] = se[1]
