@@ -135,8 +135,14 @@ def p_assign(se):
 # CALL
 
 def p_call(se):
-    "call : funname LPARENT termlist RPARENT"
-    msg = se[1] + ": "
+    """
+    call : MULTESCALAR LPARENT termlist RPARENT
+         | CAPITALIZAR LPARENT termlist RPARENT
+         | COLINEALES LPARENT termlist RPARENT
+         | PRINT LPARENT termlist RPARENT
+         | LENGTH LPARENT termlist RPARENT
+    """
+    msg = lineerr(se.lineno(1)) + se[1] + ": "
     if se[1] == "multiplicacionEscalar":
         if len(se[3]) != 2 and len(se[3]) != 3:
             raise Exception(msg + "se esparaban 2 o 3 parámetros")
@@ -167,47 +173,6 @@ def p_call(se):
     else:
         raise Exception(msg + "función desconocida")
     se[0] = Instruccion("{}({})".format(se[1], ", ".join(t.texto for t in se[3])))
-
-def p_funname(se):
-    """
-    funname : MULTESCALAR
-            | CAPITALIZAR
-            | COLINEALES
-            | PRINT
-            | LENGTH
-    """
-    se[0] = se[1]
-
-# def p_call_multescalar2(se):
-#     "call : MULTESCALAR LPARENT term COMMA term RPARENT"
-#     print("")
-#     print(se.__dict__)
-#     print("")
-#     if se[3].tipo != "ARR_NUMBER":
-#         msg = err(se)
-#         msg += " se esperaba un arreglo numérico en llamado a " + se[1]
-#         raise Exception(msg)
-#     if se[5].tipo != "NUMBER":
-#         msg = err(se)
-#         msg += " se esperaba un número en llamado a " + se[1]
-#         raise Exception(msg)
-#     se[0] = Instruccion("multiplicacionEscalar(" + se[3].texto + ", " + se[5].texto + ")")
-
-# def p_call_multescalar3(se):
-#     "call : MULTESCALAR LPARENT term COMMA term COMMA term RPARENT"
-#     if se[3].tipo != "ARR_NUMBER":
-#         msg = err(se)
-#         msg += " se esperaba un arreglo numérico en llamado a " + se[1]
-#         raise Exception(msg)
-#     if se[5].tipo != "NUMBER":
-#         msg = err(se)
-#         msg += " se esperaba un número en llamado a " + se[1]
-#         raise Exception(msg)
-#     if se[7].tipo != "BOOL":
-#         msg = err(se)
-#         msg += " se esperaba un número en llamado a " + se[1]
-#         raise Exception(msg)
-#     se[0] = Instruccion(se[1] + "(" + se[3].texto + ", " + se[5].texto + ")")
 
 
 # ARI
