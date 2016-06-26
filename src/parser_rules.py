@@ -196,7 +196,10 @@ def p_expression(se):
                                  # | registermember| array | arraymember
         se[0] = se[1]
     else: # ID | RES
-        se[0] = Termino(se[1], "UNKNOWN")
+        msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
+        if se[1] not in type_by_id:
+            raise Exception(msg + "variable no declarada")
+        se[0] = Termino(se[1], type_by_id[se[1]], register_types.get(se[1]))
 
 def p_literal(se):
     """
@@ -243,8 +246,13 @@ def p_arraymember(se):
     if se[3].tipo != "NUMBER":
         msg += "el índice del arreglo no es numérico"
         raise Exception(msg)
-    # TODO: determinar tipo en base al ID sobre el que se usa
-    se[0] = Termino("{}[{}]".format(se[1], se[3].texto), "UNKNOWN")
+    msg += se[1] + ": "
+    try:
+        if not type_by_id[se[1]].startswith("ARR_"):
+            raise Exception(msg + "no es un arreglo")
+    except KeyError:
+        raise Exception(msg + "variable desconocida")
+    se[0] = Termino("{}[{}]".format(se[1], se[3].texto), type_by_id[se[1]][4:])
 
 
 # REGISTER
