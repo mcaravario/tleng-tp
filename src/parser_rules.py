@@ -75,11 +75,11 @@ def p_block(se):
 
 def p_conditional(se):
     """
-    conditional : IF LPARENT term RPARENT block elsebranch
+    conditional : IF LPARENT expression RPARENT block elsebranch
     """
-    if se[6].texto == "": # IF LPARENT term RPARENT block
+    if se[6].texto == "": # IF LPARENT expression RPARENT block
         se[0] = Instruccion("if ({}){}".format(se[3].texto, se[5].texto))
-    else: # IF LPARENT term RPARENT block ELSE block
+    else: # IF LPARENT expression RPARENT block ELSE block
         # esto no puede generar una excepción IndexError, pues los terminos son
         # no vacios y los bloques siempre terminan en '\n'
         if se[5].texto[-2] == "}":
@@ -102,18 +102,18 @@ def p_elsebranch(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT assign SEMICOLON term SEMICOLON term RPARENT block
-         | WHILE LPARENT term RPARENT block
-         | DO block WHILE LPARENT term RPARENT SEMICOLON
+    loop : FOR LPARENT assign SEMICOLON expression SEMICOLON expression RPARENT block
+         | WHILE LPARENT expression RPARENT block
+         | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
-    if len(se) == 10: # FOR LPARENT assign SEMICOLON term SEMICOLON term RPARENT block
+    if len(se) == 10: # FOR LPARENT assign SEMICOLON expression SEMICOLON expression RPARENT block
         se[0] = Instruccion("for ({}; {}; {}){}".format(se[3].texto,
                                                         se[5].texto,
                                                         se[7].texto,
                                                         se[9].texto))
-    elif len(se) == 6: # WHILE LPARENT term RPARENT block
+    elif len(se) == 6: # WHILE LPARENT expression RPARENT block
         se[0] = Instruccion("while ({}) {}".format(se[3].texto, se[5].texto))
-    else: # DO block WHILE LPARENT term RPARENT SEMICOLON
+    else: # DO block WHILE LPARENT expression RPARENT SEMICOLON
         # esto no puede generar una excepción IndexError, pues los terminos son
         # no vacios y los bloques siempre terminan en '\n'
         if se[2].texto[-2] == "}":
@@ -123,9 +123,10 @@ def p_loop(se):
 
 
 # ASSIGN
+# TODO: +=, -=, *=, /=
 
 def p_assign(se):
-    "assign : ID ASSIGN term"
+    "assign : ID ASSIGN expression"
     se[0] = Instruccion(se[1] + " = " + se[3].texto)
     type_by_id[se[1]] = se[3].tipo
     if(se[3].tipo == 'REGISTER'):
@@ -136,11 +137,11 @@ def p_assign(se):
 
 def p_call(se):
     """
-    call : MULTESCALAR LPARENT termlist RPARENT
-         | CAPITALIZAR LPARENT termlist RPARENT
-         | COLINEALES LPARENT termlist RPARENT
-         | PRINT LPARENT termlist RPARENT
-         | LENGTH LPARENT termlist RPARENT
+    call : MULTESCALAR LPARENT expressionlist RPARENT
+         | CAPITALIZAR LPARENT expressionlist RPARENT
+         | COLINEALES LPARENT expressionlist RPARENT
+         | PRINT LPARENT expressionlist RPARENT
+         | LENGTH LPARENT expressionlist RPARENT
     """
     msg = lineerr(se.lineno(1)) + se[1] + ": "
     if se[1] == "multiplicacionEscalar":
@@ -177,23 +178,20 @@ def p_call(se):
 
 # TERM
 
-def p_term(se):
+def p_expression(se):
     """
-    term : ID
-         | RES
-         | literal
-         | array
-         | arraymember
-         | register
-         | registermember
-         | unaryop
-         | binaryop
-         | LPARENT term RPARENT
-         | term QUESTION term COLON term
+    expression : ID
+               | RES
+               | literal
+               | array
+               | arraymember
+               | register
+               | registermember
+               | unaryop
+               | binaryop
+               | expression QUESTION expression COLON expression
     """
-    if len(se) == 4: # LPARENT term RPARENT
-        se[0] = Termino("({})".format(se[2].texto), se[2].tipo)
-    elif len(se) == 6: # term QUESTION term COLON term
+    if len(se) == 6: # expression QUESTION expression COLON expression
         msg = lineerr(se.lineno(2))
         if se[1].tipo != "BOOL":
             msg += "se esperaba una expresión booleana"
@@ -217,17 +215,15 @@ def p_literal(se):
     """
     se[0] = Termino(se[1][0], se[1][1])
 
-def p_termlist(se):
+def p_expressionlist(se):
     """
-    termlist :
-             | term
-             | term COMMA termlist
+    expressionlist :
+                   | expression
+                   | expression COMMA expressionlist
     """
-    if len(se) == 1: #
-        se[0] = []
-    elif len(se) == 2: # term
+    if len(se) == 2: # expression
         se[0] = [se[1]]
-    elif len(se) == 4: # term COMMA termlist
+    elif len(se) == 4: # expression COMMA expressionlist
         se[0] = [se[1]] + se[3]
 
 
@@ -235,25 +231,25 @@ def p_termlist(se):
 
 def p_array(se):
     """
-    array : LBRACKET termlist RBRACKET
+    array : LBRACKET expressionlist RBRACKET
     """
     if len(se[2]) == 0: # LBRACKET RBRACKET
         tipo = "UNKNOWN"
-    else: # LBRACKET termlist RBRACKET
+    else: # LBRACKET expressionlist RBRACKET
         tipo = se[2][0].tipo
         if any(e.tipo != tipo for e in se[2]):
             msg = lineerr(se.lineno(1))
-            msg += " los elementos del arreglo no son del mismo tipo."
+            msg += "los elementos del arreglo no son del mismo tipo"
             raise Exception(msg)
     se[0] = Termino("[" + ", ".join(e.texto for e in se[2]) + "]", "ARR_" + tipo)
 
 def p_arraymember(se):
     """
-    arraymember : ID LBRACKET term RBRACKET
+    arraymember : ID LBRACKET expression RBRACKET
     """
-    if se[2].tipo != "NUMBER":
-        msg = lineerr(se.lineno(1))
-        msg += " el índice del arreglo no es numérico."
+    msg = lineerr(se.lineno(1))
+    if se[3].tipo != "NUMBER":
+        msg += "el índice del arreglo no es numérico"
         raise Exception(msg)
     # TODO: determinar tipo en base al ID sobre el que se usa
     se[0] = Termino("{}[{}]".format(se[1], se[3].texto), "UNKNOWN")
@@ -273,14 +269,14 @@ def p_register(se):
 def p_registerlist(se): # TODO: sacar el shift-reduce?
     """
     registerlist :
-                 | ID COLON term
-                 | ID COLON term COMMA registerlist
+                 | ID COLON expression
+                 | ID COLON expression COMMA registerlist
     """
     if len(se) == 1: #
         se[0] = []
-    elif len(se) == 4: # ID COLON term
+    elif len(se) == 4: # ID COLON expression
         se[0] = [(se[1], "{}: {}".format(se[1], se[3].texto), se[3].tipo)]
-    else: # ID COLON term COMMA registerlist
+    else: # ID COLON expression COMMA registerlist
         se[0] = [(se[1], "{}: {}".format(se[1], se[3].texto), se[3].tipo)] + se[5]
 
 def p_registermember(se):
