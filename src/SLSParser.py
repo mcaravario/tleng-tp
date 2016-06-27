@@ -1,0 +1,73 @@
+#!/usr/bin/python
+import sys
+import io
+import getopt
+import lexer_rules
+import parser_rules
+
+from ply.lex import lex
+from ply.yacc import yacc
+
+
+def usage():
+    print("./SLSParser [-h] [-o SALIDA] [-c ENTRADA | FUENTE]")
+    print()
+    print("     -h, --help       Muestra este mensaje")
+    print("     -o SALIDA        Archivo de salida para el código formateado")
+    print("     -c ENTRADA       Nombre del archivo de entrada con el código fuente")
+    print("     FUENTE           Cadena con el código fuente.")
+    print()
+    print("                      En caso de no especificarse ENTRADA ni FUENTE")
+    print("                      el código se leerá por standard input")
+
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ho:c:", ["version", "help"])
+    except getopt.GetoptError as err:
+        print(str(err))
+        usage()
+        sys.exit(2)
+
+    output=sys.stdout
+    input_file = False
+
+    for o,a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit(0)
+        elif o == '-o':
+            try:
+                output = open(a, 'w')
+            except IOError as e:
+                sys.stderr.write("No se pudo abrír el archivo {} ({}): {}\n".format(a, e.errno, e.strerror))
+                sys.exit(e.errno)
+        elif o == '-c':
+            try:
+                with open(a, 'r') as fcodigo:
+                    codigo = fcodigo.read()
+            except IOError as e:
+                sys.stderr.write("No se pudo abrír el archivo {} para lectura ({}): {}\n".format(a,e.errno, e.strerror))
+                sys.exit(e.errno)
+            input_file = True
+        else:
+            sys.stderr.write("Opción desconocida\n")
+
+    if not input_file:
+        if len(args) == 0:
+            codigo = sys.stdin.read()
+        elif len(args) == 1:
+            codigo = args[0]
+        else:
+            sys.stderr.write("Operación inválida: se especificaron mas de dos fuentes\n\n")
+            usage()
+            sys.exit(1)
+
+    lexer = lex(module=lexer_rules)
+    parser = yacc(module=parser_rules)
+
+    res = parser.parse(codigo, lexer)
+    output.write(res.texto)
+
+if __name__ == "__main__":
+    main()
