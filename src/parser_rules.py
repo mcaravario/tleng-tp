@@ -125,12 +125,21 @@ def p_loop(se):
 # TODO: +=, -=, *=, /=
 
 def p_assign(se):
-    "assign : ID ASSIGN expression"
-    se[0] = Instruccion(se[1] + " = " + se[3].texto)
-    type_by_id[se[1]] = se[3].tipo
-    if(se[3].tipo == 'REGISTER'):
-        register_types[se[1]] = se[3].tiposreg
-
+    """
+    assign : ID ASSIGN expression
+           | arraymember ASSIGN expression
+    """
+    if type(se[1]) is Termino:
+        if(se[1].tipo != se[3].tipo):
+            msg += "el tipo del arreglo de la variable no coincide con el"
+            msg += "tipo de la expresion"
+            raise Exception(msg)
+        se[0] = Instruccion(se[1].texto + " = " + se[3].texto)
+    else:
+        se[0] = Instruccion(se[1] + " = " + se[3].texto)
+        type_by_id[se[1]] = se[3].tipo
+        if(se[3].tipo == 'REGISTER'):
+            register_types[se[1]] = se[3].tiposreg
 
 # CALL
 
