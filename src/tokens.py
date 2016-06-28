@@ -15,9 +15,9 @@ reserved = {
     "return": "RETURN",
     "true": "TRUE",
     "false": "FALSE",
-    "AND" : "AND",
-    "OR" : "OR",
-    "NOT" : "NOT"
+    "and" : "AND",
+    "or" : "OR",
+    "not" : "NOT"
 }
 
 tokens = [

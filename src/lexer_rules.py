@@ -22,7 +22,7 @@ def t_STRING(tok):
 
 def t_ID(tok):
     r"[a-zA-Z][a-zA-Z0-9_]*"
-    tok.type = reserved.get(tok.value, "ID")
+    tok.type = reserved.get(tok.value.lower(), "ID")
     if tok.type == "TRUE" or tok.type == "FALSE":
         tok.value = (tok.value, "BOOL")
     return tok
