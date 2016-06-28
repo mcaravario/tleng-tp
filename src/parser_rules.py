@@ -249,17 +249,17 @@ def p_expression(se):
                | register
                | sign registermember
                | binaryop
-               | LPARENT expression RPARENT QUESTION expression COLON expression
+               | expression QUESTION expression COLON term
     """
-    if len(se) == 8: # LPARENT expression RPARENT QUESTION expression COLON expression
+    if len(se) == 6: # LPARENT expression RPARENT QUESTION expression COLON expression
         msg = lineerr(se.lineno(2))
-        if se[2].tipo != "BOOL":
+        if se[1].tipo != "BOOL":
             msg += "se esperaba una expresión booleana"
             raise Exception(msg)
-        elif se[5].tipo != se[7].tipo:
+        elif se[3].tipo != se[5].tipo:
             msg += "las ramas del operador ?: deben tener el mismo tipo"
             raise Exception(msg)
-        se[0] = Termino("( {} ) ? {} : {}".format(se[2].texto, se[5].texto, se[7].texto), se[5].tipo)
+        se[0] = Termino("{} ? {} : {}".format(se[1].texto, se[3].texto, se[5].texto), se[3].tipo)
     elif len(se) == 3 and type(se[2]) is Termino: ## sign ID | sign RES | sign arraymember | sign registermember
         msg = lineerr(se.lineno(2))
         if se[1] != "" and se[2].tipo != "NUMBER":
