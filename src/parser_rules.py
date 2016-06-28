@@ -361,13 +361,15 @@ def p_registermember(se):
     """
     registermember : ID DOT ID
     """
-    # TODO: determinar tipo en base al ID sobre el que se usa y el ID con el
-    # cual se accede
     reg = register_types.get(se[1])
     if reg is None:
-        tipo = "UNKOWN"
-    else:
-        tipo = reg.get(se[3],"UNKOWN")
+        msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
+        if se[1] not in type_by_id:
+            raise Exception(msg + " registro no declarada")
+    tipo = reg.get(se[3])
+    if tipo is None:
+        msg = "{}: ".format(lineerr(se.lineno(1)))
+        raise Exception(msg + "campo {} del registro {} no declarada".format(se[3],se[1]))
     se[0] = Termino("{}.{}".format(se[1], se[3]), tipo)
 
 
