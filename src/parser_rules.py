@@ -186,47 +186,63 @@ def p_call(se):
 
 # TERM
 
+def p_sign(se):
+    """
+    sign : ADD
+         | SUB
+         |
+    """
+    if len(se) == 2 :
+        se[0] = se[1]
+    else:
+        se[0] = ""
+
 def p_expression(se):
     """
-    expression : ID
-               | RES
-               | factor
+    expression : sign ID
+               | sign RES
                | array
-               | arraymember
+               | sign arraymember
                | register
-               | registermember
+               | sign registermember
                | binaryop
-               | expression QUESTION expression COLON expression
+               | LPARENT expression RPARENT QUESTION expression COLON expression
     """
-    if len(se) == 6: # expression QUESTION expression COLON expression
+    if len(se) == 8: # LPARENT expression RPARENT QUESTION expression COLON expression
         msg = lineerr(se.lineno(2))
-        if se[1].tipo != "BOOL":
+        if se[2].tipo != "BOOL":
             msg += "se esperaba una expresión booleana"
             raise Exception(msg)
-        elif se[3].tipo != se[5].tipo:
+        elif se[5].tipo != se[7].tipo:
             msg += "las ramas del operador ?: deben tener el mismo tipo"
             raise Exception(msg)
-        se[0] = Termino("{} ? {} : {}".format(se[1].texto, se[3].texto, se[5].texto), se[3].tipo)
-    elif type(se[1]) is Termino: # factor | unaryop | binaryop | register
-                                 # | registermember| array | arraymember
-        se[0] = se[1]
-    else: # ID | RES
+        se[0] = Termino("( {} ) ? {} : {}".format(se[2].texto, se[5].texto, se[7].texto), se[5].tipo)
+    elif len(se) == 3 and type(se[2]) is Termino: ## sign ID | sign RES | sign arraymember | sign registermember
+        msg = lineerr(se.lineno(2))
+        if se[1] != "" and se[2].tipo != "NUMBER":
+            msg += "se esperaba una expresión numérica"
+            raise Exception(msg)
+        se[0] = Termino(se[1]+se[2].texto,se[2].tipo)
+    elif len(se) == 3: # sign ID | sign RES
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
         if se[1] not in type_by_id:
             raise Exception(msg + "variable no declarada")
-        se[0] = Termino(se[1], type_by_id[se[1]], register_types.get(se[1]))
+        if se[1] != "" and type_by_id[se[2]] != "NUMBER":
+            msg += "se esperaba una expresión numérica"
+            raise Exception(msg)
+        se[0] = Termino(se[2], type_by_id[se[2]], register_types.get(se[2]))
+    else: # register | array | binaryop
+        se[0] = se[1]
 
 def p_literal(se):
     """
-    literal : NUMBER
-            | ADD NUMBER
-            | SUB NUMBER
+    literal : sign NUMBER
             | STRING
             | FALSE
             | TRUE
     """
-    if len(se) == 3 : # +/- NUMBER
-        se[0] = Termino(se[1]+se[2][0], se[2][1])
+    if len(se) == 3:
+        se[0] = Termino(se[1]+se[2][0],se[2][1])
     else:
         se[0] = Termino(se[1][0],se[1][1])
 
@@ -328,6 +344,7 @@ def p_binaryop(se):
     """
     binaryop : expression ADD term
              | expression SUB term
+             | term
     """
     if len(se) == 2:
         se[0] = se[1]
@@ -367,4 +384,4 @@ def p_factor(se):
     if len(se) == 2:
         se[0] = se[1]
     else:
-        se[0] = Termino("({})".format(se[2]), "NUMBER")
+        se[0] = Termino("( {} )".format(se[2].texto), se[2].tipo)
