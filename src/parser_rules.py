@@ -128,19 +128,20 @@ def p_assign(se):
     """
     assign : ID ASSIGN expression
            | arraymember ASSIGN expression
+           | registermember ASSIGN expression
     """
-    if type(se[1]) is Termino: # arraymember ASSIGN expression
+    if type(se[1]) is Termino: # arraymember ASSIGN expression | registermember ASSIGN expression
         msg = lineerr(se.lineno(2))
         if(se[1].tipo != se[3].tipo):
             msg += "el tipo del arreglo de la variable " + se[1].texto + "no coincide con el"
             msg += "tipo de la expresion"
             raise Exception(msg)
-        se[0] = Instruccion(se[1].texto + " = " + se[3].texto)
+        se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
     else:
         type_by_id[se[1]] = se[3].tipo
         if(se[3].tipo == 'REGISTER'):
             register_types[se[1]] = se[3].tiposreg
-        se[0] = Instruccion(se[1] + " = " + se[3].texto)
+        se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
 
 # CALL
 
