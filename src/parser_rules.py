@@ -181,7 +181,7 @@ def p_expression(se):
     """
     expression : ID
                | RES
-               | literal
+               | factor
                | array
                | arraymember
                | register
@@ -198,7 +198,7 @@ def p_expression(se):
             msg += "las ramas del operador ?: deben tener el mismo tipo"
             raise Exception(msg)
         se[0] = Termino("{} ? {} : {}".format(se[1].texto, se[3].texto, se[5].texto), se[3].tipo)
-    elif type(se[1]) is Termino: # literal | unaryop | binaryop | register
+    elif type(se[1]) is Termino: # factor | unaryop | binaryop | register
                                  # | registermember| array | arraymember
         se[0] = se[1]
     else: # ID | RES
@@ -314,7 +314,6 @@ def p_binaryop(se):
     """
     binaryop : expression ADD term
              | expression SUB term
-             | term
     """
     if len(se) == 2:
         se[0] = se[1]
