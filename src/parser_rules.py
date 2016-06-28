@@ -155,7 +155,7 @@ def p_opassign(se):
         msg = lineerr(se.lineno(2))
         tipo = type_by_id.get(se[1], "?")
         if tipo != se[3].tipo:
-            msg += "el tipo de la variable " + se[1] + "no coincide con el"
+            msg += "el tipo de la variable " + se[2] + "no coincide con el"
             msg += "tipo de la expresion"
             raise Exception(msg)
         if se[2] == "+=" and not (tipo in ["NUMBER", "STRING"]):
@@ -243,12 +243,8 @@ def p_sign(se):
 
 def p_expression(se):
     """
-    expression : sign ID
-               | sign RES
-               | array
-               | sign arraymember
+    expression : array
                | register
-               | sign registermember
                | binaryop
                | expression QUESTION expression COLON term
     """
@@ -261,20 +257,6 @@ def p_expression(se):
             msg += "las ramas del operador ?: deben tener el mismo tipo"
             raise Exception(msg)
         se[0] = Termino("{} ? {} : {}".format(se[1].texto, se[3].texto, se[5].texto), se[3].tipo)
-    elif len(se) == 3 and type(se[2]) is Termino: ## sign ID | sign RES | sign arraymember | sign registermember
-        msg = lineerr(se.lineno(2))
-        if se[1] != "" and se[2].tipo != "NUMBER":
-            msg += "se esperaba una expresión numérica"
-            raise Exception(msg)
-        se[0] = Termino(se[1]+se[2].texto,se[2].tipo)
-    elif len(se) == 3: # sign ID | sign RES
-        msg = "{}{}: ".format(lineerr(se.lineno(1)), se[2])
-        if se[2] not in type_by_id:
-            raise Exception(msg + "variable no declarada")
-        if se[1] != "" and type_by_id[se[2]] != "NUMBER":
-            msg += "se esperaba una expresión numérica"
-            raise Exception(msg)
-        se[0] = Termino(se[2], type_by_id[se[2]], register_types.get(se[2]))
     else: # register | array | binaryop
         se[0] = se[1]
 
@@ -289,6 +271,7 @@ def p_literal(se):
         se[0] = Termino(se[1]+se[2][0],se[2][1])
     else:
         se[0] = Termino(se[1][0],se[1][1])
+
 
 def p_expressionlist(se):
     """
@@ -422,9 +405,25 @@ def p_term(se):
             raise Exception(msg + "se esperaban números")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
+def p_var(se):
+    """
+    var : ID
+        | RES
+        | arraymember
+        | registermember
+    """
+    if type(se[1]) is Termino: # arraymember | registermember
+        se[0] = se[1]
+    else: ## sign ID | sign RES | sign arraymember | sign registermember
+        msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
+        if se[1] not in type_by_id:
+            raise Exception(msg + "variable no declarada")
+        se[0] = Termino(se[1], type_by_id[se[1]], register_types.get(se[1]))
+
 def p_factor(se):
     """
     factor : literal
+           | var
            | LPARENT expression RPARENT
     """
     if len(se) == 2:
