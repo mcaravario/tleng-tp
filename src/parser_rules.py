@@ -47,6 +47,7 @@ def p_instr(se):
     """
     instr : COMMENT
           | assign SEMICOLON
+          | unarymod SEMICOLON
           | call SEMICOLON
           | loop
     """
@@ -80,7 +81,7 @@ def p_instaux(se):
 def p_mconditional(se):
     """
     mconditional : IF LPARENT expression RPARENT mconditional ELSE mconditional
-                 | block
+                 | instr
     """
     if len(se) == 2:
         se[0] = se[1]
@@ -152,17 +153,17 @@ def p_opassign(se):
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
         if se[1] not in type_by_id:
             raise Exception(msg + "variable no declarada")
-        msg = lineerr(se.lineno(2))
-        tipo = type_by_id.get(se[1], "?")
+        msg = lineerr(se.lineno(1))
+        tipo = type_by_id.get(se[1])
         if tipo != se[3].tipo:
             msg += "el tipo de la variable " + se[2] + "no coincide con el"
             msg += "tipo de la expresion"
             raise Exception(msg)
-        if se[2] == "+=" and not (tipo in ["NUMBER", "STRING"]):
+        if se[2] == "+=" and tipo not in ["NUMBER", "STRING"]:
             msg += "se esperaba un tipo numérico o string para +="
             raise Exception(msg)
-        elif not (tipo == "NUMBER"):
-            msg += "se esperaba un tipo numérico para " ++ se[2];
+        elif se[2] != "+=" and tipo != "NUMBER":
+            msg += "se esperaba un tipo numérico para " + se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
 
@@ -262,7 +263,7 @@ def p_expression(se):
 
 def p_literal(se):
     """
-    literal : sign NUMBER
+    literal : NUMBER
             | STRING
             | FALSE
             | TRUE
@@ -357,13 +358,7 @@ def p_registermember(se):
     se[0] = Termino("{}.{}".format(se[1], se[3]), tipo)
 
 
-# UNARYOP
 
-def p_unaryop(se): # TODO: hacer algo
-    """
-    unaryop : expression
-    """
-    # quizas unaryop : op expression
 
 
 # BINARYOP
@@ -389,11 +384,11 @@ def p_binaryop(se):
 
 def p_term(se):
     """
-    term : term MULT factor
-         | term DIV factor
-         | term MOD factor
-         | term POW factor
-         | factor
+    term : term MULT unaryop
+         | term DIV unaryop
+         | term MOD unaryop
+         | term POW unaryop
+         | unaryop
     """
     if len(se) == 2:
         se[0] = se[1]
@@ -405,6 +400,47 @@ def p_term(se):
             raise Exception(msg + "se esperaban números")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
+# UNARYOP
+def p_unarymod(se):
+    """
+    unarymod : INC var
+             | DEC var
+             | var INC
+             | var DEC
+    """
+    if(type(se[1]) is Termino):
+        msg = "{}: ".format(lineerr(se.lineno(1)))
+        if se[1].tipo != "NUMBER":
+            raise Exception(msg + " se esperaba numérico para" ++ se[1])
+        se[0] = Termino(se[1].texto + se[2],se[1].tipo)
+    else:
+        msg = "{}: ".format(lineerr(se.lineno(1)))
+        if se[2].tipo != "NUMBER":
+            raise Exception(msg + " se esperaba numérico para" ++ se[1])
+        se[0] = Termino(se[1] + se[2].texto,se[2].tipo)
+
+def p_unaryop(se):
+    """
+    unaryop : ADD unaryop
+            | SUB unaryop
+            | NOT unaryop
+            | unarymod
+            | factor
+    """
+    if len(se) == 2:
+        se[0] = se[1]
+    else:
+        if se[1] == "not" and se[2].tipo != "BOOL":
+            msg = "{}: ".format(lineerr(se.lineno(1)))
+            if se[1] not in type_by_id:
+                raise Exception(msg + " se esperaba tipo bool para not")
+        if se[1] != "not" and se[2].tipo != "NUMBER":
+            msg = "{}: ".format(lineerr(se.lineno(1)))
+            if se[1] not in type_by_id:
+                raise Exception(msg + " se esperaba numérico para" ++ se[1])
+        se[0] = Termino("{}{}".format(se[1], se[2].texto), se[2].tipo)
+
+
 def p_var(se):
     """
     var : ID
@@ -414,7 +450,7 @@ def p_var(se):
     """
     if type(se[1]) is Termino: # arraymember | registermember
         se[0] = se[1]
-    else: ## sign ID | sign RES | sign arraymember | sign registermember
+    else: ## ID | RES
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
         if se[1] not in type_by_id:
             raise Exception(msg + "variable no declarada")

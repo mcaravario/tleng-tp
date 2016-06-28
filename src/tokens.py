@@ -15,9 +15,9 @@ reserved = {
     "return": "RETURN",
     "true": "TRUE",
     "false": "FALSE",
-    "and" : "AND",
-    "or" : "OR",
-    "not" : "NOT"
+    "AND" : "AND",
+    "OR" : "OR",
+    "NOT" : "NOT"
 }
 
 tokens = [
@@ -33,6 +33,7 @@ tokens = [
     'RPARENT',
     'LPARENT',
     'ADD',
+	'DEC',
     'ADDEQ',
     'INC',
     'ASSIGN',

@@ -55,6 +55,8 @@ t_ADDEQ = r"\+="
 
 t_INC = r"\+\+"
 
+t_DEC = r"--"
+
 t_ASSIGN = r"="
 
 t_EQUAL = r"=="
