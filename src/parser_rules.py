@@ -219,11 +219,16 @@ def p_expression(se):
 def p_literal(se):
     """
     literal : NUMBER
+            | ADD NUMBER
+            | SUB NUMBER
             | STRING
             | FALSE
             | TRUE
     """
-    se[0] = Termino(se[1][0], se[1][1])
+    if len(se) == 3 : # +/- NUMBER
+        se[0] = Termino(se[1]+se[2][0], se[2][1])
+    else:
+        se[0] = Termino(se[1][0],se[1][1])
 
 def p_expressionlist(se):
     """
