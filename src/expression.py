@@ -7,3 +7,7 @@ class Termino(object):
 class Instruccion(object):
     def __init__(self, texto):
         self.texto = texto
+
+class Bloque(object):
+    def __init__(self, texto):
+        self.texto = texto

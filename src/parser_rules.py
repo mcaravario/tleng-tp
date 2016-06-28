@@ -13,6 +13,11 @@ def tab(s):
 def lineerr(n):
     return "Error de parseo en línea {}: ".format(n)
 
+def formatBlock(t):
+    if type(t) is Bloque:
+        return " {\n" + tab(t.texto) + "}\n";
+    else:
+        return "\n" + tab(t.texto)
 
 def p_error(se):
     if se is None:
@@ -29,8 +34,8 @@ def p_error(se):
 
 def p_instrlsit(se):
     """
-    instrlist : instr
-              | instr instrlist
+    instrlist : instaux
+              | instaux instrlist
     """
     if len(se) == 2: # instr
         se[0] = se[1]
@@ -42,12 +47,11 @@ def p_instr(se):
     instr : COMMENT
           | assign SEMICOLON
           | call SEMICOLON
-          | conditional
           | loop
     """
     if len(se) == 2 and (type(se[1]) is str): # COMMENT
         se[0] = Instruccion(se[1] + "\n")
-    elif len(se) == 2 and (type(se[1]) is Instruccion): # conditional | loop
+    elif len(se) == 2 and (type(se[1]) is Instruccion): # loop
         se[0] = Instruccion(se[1].texto)
     else: # assign SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";\n")
@@ -58,37 +62,40 @@ def p_block(se):
           | LBRACE instrlist RBRACE
     """
     if len(se) == 2: # instr
-        se[0] = Instruccion("\n" + tab(se[1].texto))
+        se[0] = Instruccion(se[1].texto)
     else: # LBRACE instrlist RBRACE
-        se[0] = Instruccion(" {\n" + tab(se[2].texto) + "}\n")
+        se[0] = Bloque(se[2].texto)
 
 
 # CONDITIONALS
 
-def p_conditional(se):
+def p_instaux(se):
     """
-    conditional : IF LPARENT expression RPARENT block elsebranch
+    instaux : mconditional
+            | oconditional
     """
-    if se[6].texto == "": # IF LPARENT expression RPARENT block
-        se[0] = Instruccion("if ({}){}".format(se[3].texto, se[5].texto))
-    else: # IF LPARENT expression RPARENT block ELSE block
-        # esto no puede generar una excepción IndexError, pues los terminos son
-        # no vacios y los bloques siempre terminan en '\n'
-        if se[5].texto[-2] == "}":
-            se[0] = Instruccion("if ({}){} {}".format(se[3].texto, se[5].texto.rstrip(), se[6].texto))
-        else:
-            se[0] = Instruccion("if ({}){}{}".format(se[3].texto, se[5].texto, se[6].texto))
+    se[0] = se[1]
 
-def p_elsebranch(se):
+def p_mconditional(se):
     """
-    elsebranch :
-               | ELSE block
+    mconditional : IF LPARENT expression RPARENT mconditional ELSE mconditional
+                 | block
     """
-    if len(se) == 1: #
-        se[0] = Instruccion("")
-    elif len(se) == 3: # ELSE ifblock
-        se[0] = Instruccion("else {}".format(se[2].texto))
+    if len(se) == 2:
+        se[0] = se[1]
+    else:
+        se[0] = Instruccion("if ({}){}else {}".format(se[3].texto,formatBlock(se[5]),formatBlock(se[7])))
 
+
+def p_oconditional(se):
+    """
+    oconditional : IF LPARENT expression RPARENT mconditional ELSE oconditional
+                 | IF LPARENT expression RPARENT instaux
+    """
+    if len(se) == 6:
+        se[0] = Instruccion("if ({}){}".format(se[3].texto, formatBlock(se[5])))
+    else:
+        se[0] = Instruccion("if ({}){}else {}".format(se[3].texto,formatBlock(se[5]),formatBlock(se[7])))
 
 # LOOP
 
@@ -102,16 +109,16 @@ def p_loop(se):
         se[0] = Instruccion("for ({}; {}; {}){}".format(se[3].texto,
                                                         se[5].texto,
                                                         se[7].texto,
-                                                        se[9].texto))
+                                                        formatBlock(se[9])))
     elif len(se) == 6: # WHILE LPARENT expression RPARENT block
-        se[0] = Instruccion("while ({}) {}".format(se[3].texto, se[5].texto))
+        se[0] = Instruccion("while ({}) {}".format(se[3].texto, formatBlock(se[5])))
     else: # DO block WHILE LPARENT expression RPARENT SEMICOLON
         # esto no puede generar una excepción IndexError, pues los terminos son
         # no vacios y los bloques siempre terminan en '\n'
         if se[2].texto[-2] == "}":
-            se[0] = Instruccion("do {} while ({});\n".format(se[2].texto.rstrip(), se[5].texto))
+            se[0] = Instruccion("do {} while ({});\n".format(formatBlock(se[2]).rstrip(), se[5].texto))
         else:
-            se[0] = Instruccion("do {}while ({});\n".format(se[2].texto, se[5].texto))
+            se[0] = Instruccion("do {}while ({});\n".format(formatBlock(se[2]), se[5].texto))
 
 
 # ASSIGN
@@ -179,7 +186,6 @@ def p_expression(se):
                | arraymember
                | register
                | registermember
-               | unaryop
                | binaryop
                | expression QUESTION expression COLON expression
     """
