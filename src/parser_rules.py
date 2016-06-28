@@ -122,7 +122,48 @@ def p_loop(se):
 
 
 # ASSIGN
-# TODO: +=, -=, *=, /=
+
+def p_assign_number(se):
+    """
+    assignop : ADDEQ
+             | SUBEQ
+             | DIVEQ
+             | MULTEQ
+    """
+    se[0] = se[1]
+
+def p_opassign(se):
+    """
+    assign : ID assignop expression
+           | arraymember assignop expression
+           | registermember assignop expression
+    """
+    if type(se[1]) is Termino: # arraymember ASSIGN expression | registermember ASSIGN expression
+        msg = "{}{}: ".format(lineerr(se.lineno(1)), se[2])
+        if se[2] == "+=" and not (se[1].tipo in ["NUMBER", "STRING"]):
+            msg += "se esperaba un tipo numérico o string para +="
+            raise Exception(msg)
+        elif s[2] in ["-=","*=","/="] and not (se[1].tipo == "NUMBER"):
+            msg += "se esperaba un tipo numérico para " ++ se[2];
+            raise Exception(msg)
+        se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
+    else:
+        msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
+        if se[1] not in type_by_id:
+            raise Exception(msg + "variable no declarada")
+        msg = lineerr(se.lineno(2))
+        tipo = type_by_id.get(se[1], "?")
+        if tipo != se[3].tipo:
+            msg += "el tipo de la variable " + se[1] + "no coincide con el"
+            msg += "tipo de la expresion"
+            raise Exception(msg)
+        if se[2] == "+=" and not (tipo in ["NUMBER", "STRING"]):
+            msg += "se esperaba un tipo numérico o string para +="
+            raise Exception(msg)
+        elif not (tipo == "NUMBER"):
+            msg += "se esperaba un tipo numérico para " ++ se[2];
+            raise Exception(msg)
+        se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
 
 def p_assign(se):
     """
