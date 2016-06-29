@@ -234,17 +234,6 @@ def p_call(se):
 
 # TERM
 
-def p_sign(se):
-    """
-    sign : ADD
-         | SUB
-         |
-    """
-    if len(se) == 2 :
-        se[0] = se[1]
-    else:
-        se[0] = ""
-
 def p_expression(se):
     """
     expression : array
