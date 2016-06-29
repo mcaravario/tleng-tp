@@ -22,9 +22,9 @@ def t_STRING(tok):
 
 def t_ID(tok):
     r"[a-zA-Z][a-zA-Z0-9_]*"
-    if reserved.get(tok.value) is None and reserved.get(tok.value.lower()) or reserved.get(tok.value.upper()):
+    if reserved.get(tok.value) is None and (reserved.get(tok.value.lower()) or reserved.get(tok.value.upper())):
         raise Exception("identificador coincide con palabra clave");
-    tok.type = reserved.get(tok.value.lower(), "ID")
+    tok.type = reserved.get(tok.value, "ID")
     if tok.type == "TRUE" or tok.type == "FALSE":
         tok.value = (tok.value, "BOOL")
     return tok

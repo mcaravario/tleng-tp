@@ -26,7 +26,10 @@ def p_error(se):
     else:
         msg = lineerr(se.lineno)
         msg += "\n\trule: " + se.type
-        msg += "\n\tsubexpression value: " + se.value
+        if type(se.value) is tuple:
+            msg += "\n\tsubexpression value: " + se.value[0]
+        else:
+            msg += "\n\tsubexpression value: " + se.value
         msg += "\n\tlineno: " + str(se.lineno)
     raise Exception(msg)
 
@@ -268,10 +271,7 @@ def p_literal(se):
             | FALSE
             | TRUE
     """
-    if len(se) == 3:
-        se[0] = Termino(se[1]+se[2][0],se[2][1])
-    else:
-        se[0] = Termino(se[1][0],se[1][1])
+    se[0] = Termino(se[1][0],se[1][1])
 
 
 def p_expressionlist(se):
@@ -430,15 +430,16 @@ def p_unaryop(se):
     if len(se) == 2:
         se[0] = se[1]
     else:
-        if se[1] == "not" and se[2].tipo != "BOOL":
+        if se[1] == "NOT":
             msg = "{}: ".format(lineerr(se.lineno(1)))
-            if se[1] not in type_by_id:
-                raise Exception(msg + " se esperaba tipo bool para not")
-        if se[1] != "not" and se[2].tipo != "NUMBER":
+            if se[2].tipo != "BOOL":
+                raise Exception(msg + " se esperaba tipo bool para NOT")
+            se[0] = Termino("{} {}".format(se[1], se[2].texto), se[2].tipo)
+        elif se[1] != "NOT":
             msg = "{}: ".format(lineerr(se.lineno(1)))
-            if se[1] not in type_by_id:
+            if se[2].tipo != "NUMBER":
                 raise Exception(msg + " se esperaba numérico para" ++ se[1])
-        se[0] = Termino("{}{}".format(se[1], se[2].texto), se[2].tipo)
+            se[0] = Termino("{}{}".format(se[1], se[2].texto), se[2].tipo)
 
 
 def p_var(se):
