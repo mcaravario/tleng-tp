@@ -52,14 +52,17 @@ def p_instr(se):
           | assign SEMICOLON
           | unarymod SEMICOLON
           | call SEMICOLON
+          | RETURN expression SEMICOLON
           | loop
     """
     if len(se) == 2 and (type(se[1]) is str): # COMMENT
         se[0] = Instruccion(se[1] + "\n")
     elif len(se) == 2 and (type(se[1]) is Instruccion): # loop
         se[0] = Instruccion(se[1].texto)
-    else: # assign SEMICOLON | call SEMICOLON
+    elif len(se) == 3: # assign SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";\n")
+    else: ## RETURN expression SEMICOLON
+        se[0] = Instruccion("{} {};\n".format(se[1],se[2].texto))
 
 def p_block(se):
     """
@@ -84,7 +87,7 @@ def p_instaux(se):
 def p_mconditional(se):
     """
     mconditional : IF LPARENT expression RPARENT mconditional ELSE mconditional
-                 | instr
+                 | block
     """
     if len(se) == 2:
         se[0] = se[1]
