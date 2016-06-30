@@ -201,6 +201,7 @@ def p_call(se):
     """
     msg = lineerr(se.lineno(1)) + se[1] + ": "
     if se[1] == "multiplicacionEscalar":
+        tipo = "ARR_NUMBER"
         if len(se[3]) != 2 and len(se[3]) != 3:
             raise Exception(msg + "se esparaban 2 o 3 parámetros")
         if se[3][0].tipo != "ARR_NUMBER":
@@ -210,26 +211,30 @@ def p_call(se):
         if len(se[3]) == 3 and se[3][2].tipo != "BOOL":
             raise Exception(msg + "se esperaba un booleano")
     elif se[1] == "capitalizar":
+        tipo = "STRING"
         if len(se[3]) != 1:
             raise Exception(msg + "se esperaba un parámetro")
         if se[3][0].tipo != "STRING":
             raise Exception(msg + "se esperaba una cadena")
     elif se[1] == "colineales":
+        tipo = "BOOL"
         if len(se[3]) != 2:
             raise Exception(msg + "se esperaban 2 parámetros")
         if se[3][0].tipo != "ARR_NUMBER" or se[3][1].tipo != "ARR_NUMBER":
             raise Exception(msg + "se esperaban arreglos numéricos")
     elif se[1] == "print":
+        tipo = "PRINT"
         if len(se[3]) != 1:
             raise Exception(msg + "se esperaba un parámetro")
     elif se[1] == "length":
+        tipo = "NUMBER"
         if len(se[3]) != 1:
             raise Exception(msg + "se esperaba un parámetro")
         if se[3][0].tipo != "STRING" and not se[3][0].tipo.startswith("ARR_"):
             raise Exception(msg + "se esperaba una cadena o un arreglo")
     else:
         raise Exception(msg + "función desconocida")
-    se[0] = Instruccion("{}({})".format(se[1], ", ".join(t.texto for t in se[3])))
+    se[0] = Termino("{}({})".format(se[1], ", ".join(t.texto for t in se[3])), tipo)
 
 
 # TERM
@@ -483,9 +488,13 @@ def p_factor(se):
     """
     factor : literal
            | var
+           | call
            | LPARENT expression RPARENT
     """
     if len(se) == 2:
         se[0] = se[1]
+        if(type(se[1]) is Termino and se[1].tipo == "PRINT"): ## Ej: a=print("hola");
+            msg = lineerr(se.lineno(1))
+            raise Exception(msg + "print no devuelve un valor")
     else:
         se[0] = Termino("( {} )".format(se[2].texto), se[2].tipo)
