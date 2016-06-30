@@ -33,7 +33,7 @@ tokens = [
     'RPARENT',
     'LPARENT',
     'ADD',
-	'DEC',
+    'DEC',
     'ADDEQ',
     'INC',
     'ASSIGN',
@@ -50,11 +50,9 @@ tokens = [
     'LEQ',
     'GEQ',
     'GT',
-    'LNOT', #!
     'LNOTEQ',  #!=
     'QUESTION',
     'DOT',
     'STRING',
-    'COMMA',
-    'WHITESPACES',
+    'COMMA'
 ] + list(reserved.values())
