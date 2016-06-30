@@ -407,7 +407,7 @@ def p_binaryop(se):
                 raise Exception(msg + "se esparaban números o cadenas, se encontró " + se[1].tipo)
         elif se[2] == "-" and se[1].tipo != "NUMBER":
             raise Exception(msg + "se esperaban números")
-        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), "NUMBER")
+        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
 def p_term(se):
     """
