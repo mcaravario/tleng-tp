@@ -85,8 +85,6 @@ t_GEQ = r">="
 
 t_GT = r">"
 
-t_LNOT = r"!"
-
 t_LNOTEQ = r"!="
 
 t_QUESTION = r"\?"

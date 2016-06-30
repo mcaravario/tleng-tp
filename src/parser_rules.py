@@ -238,8 +238,8 @@ def p_expression(se):
     """
     expression : array
                | register
-               | binaryop
-               | expression QUESTION expression COLON term
+               | lbinaryop
+               | expression QUESTION expression COLON lcomp
     """
     if len(se) == 6: # LPARENT expression RPARENT QUESTION expression COLON expression
         msg = lineerr(se.lineno(2))
@@ -348,15 +348,48 @@ def p_registermember(se):
 
 
 
+def p_lbinaryop(se):
+    """
+    lbinaryop : expression AND lcomp
+              | expression OR lcomp
+              | lcomp
+    """
+    if(len(se) == 2):
+        se[0] = se[1]
+    else:
+        if(se[1].tipo != "BOOL" or se[3].tipo != "BOOL"):
+            msg = "{}: ".format(lineerr(se.lineno(1)))
+            raise Exception(msg + "se esperaban dos bools")
+        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), "BOOL")
 
+def p_lcomp(se):
+    """
+    lcomp : lcomp LEQ    binaryop
+          | lcomp GEQ    binaryop
+          | lcomp LT     binaryop
+          | lcomp GT     binaryop
+          | lcomp EQUAL  binaryop
+          | lcomp LNOTEQ binaryop
+          | binaryop
+    """
+    if(len(se) == 2): # binaryop
+        se[0] = se[1]
+    elif se[2] in ["==", "!="]: # ==, !=
+        if(se[1].tipo != se[3].tipo):
+            msg = "{} {}: ".format(lineerr(se.lineno(2)),se[2])
+            raise Exception(msg + "los tipos no coinciden")
+        se[0] = Termino("{} {} {}".format(se[1].texto,se[2],se[3].texto),"BOOL")
+    else: # <=, >=, <, >
+        if(se[1].tipo != "NUMBER" or se[3].tipo != "NUMBER"):
+            msg = "{} {}: ".format(lineerr(se.lineno(2)),se[2])
+            raise Exception(msg + "se esperaban dos numeros")
+        se[0] = Termino("{} {} {}".format(se[1].texto,se[2],se[3].texto),"BOOL")
 
-# BINARYOP
-# TODO: <, <=, >, >=, quizás algo más
 
 def p_binaryop(se):
     """
-    binaryop : expression ADD term
-             | expression SUB term
+    binaryop : binaryop ADD term
+             | binaryop SUB term
              | term
     """
     if len(se) == 2:
