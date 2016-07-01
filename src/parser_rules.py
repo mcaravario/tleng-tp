@@ -300,19 +300,16 @@ def p_array(se):
 
 def p_arraymember(se):
     """
-    arraymember : ID LBRACKET expression RBRACKET
+    arraymember : var LBRACKET expression RBRACKET
     """
     msg = lineerr(se.lineno(1))
     if se[3].tipo != "NUMBER":
         msg += "el índice del arreglo no es numérico"
         raise Exception(msg)
-    msg += se[1] + ": "
-    try:
-        if not type_by_id[se[1]].startswith("ARR_"):
-            raise Exception(msg + "no es un arreglo")
-    except KeyError:
-        raise Exception(msg + "variable desconocida")
-    se[0] = Termino("{}[{}]".format(se[1], se[3].texto), type_by_id[se[1]][4:])
+    msg += se[1].texto + ": "
+    if not se[1].tipo.startswith("ARR_"):
+        raise Exception(msg + "no es un arreglo")
+    se[0] = Termino("{}[{}]".format(se[1].texto, se[3].texto), se[1].tipo[4:])
 
 
 # REGISTER

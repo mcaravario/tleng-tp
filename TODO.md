@@ -18,11 +18,6 @@
 			\# Comentario3
 			a=10;
 
-* Soportar indexación de matrices
-	Ejemplo:
-		a = [[2,3],[4,5]];
-		c = a[1][1];
-
 * Soportar indexación de vectores/matrices de registros
 	Ejemplo:
 		a = {v1:[1,2],v2:[3,4]};
