@@ -133,11 +133,11 @@ def p_oconditional(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT assign SEMICOLON expression SEMICOLON expression RPARENT block
+    loop : FOR LPARENT maybeassign SEMICOLON expression SEMICOLON maybeexpr RPARENT block
          | WHILE LPARENT expression RPARENT block
          | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
-    if len(se) == 10: # FOR LPARENT assign SEMICOLON expression SEMICOLON expression RPARENT block
+    if len(se) == 10: # FOR LPARENT maybeassign SEMICOLON expression SEMICOLON mayebeexpr RPARENT block
         se[0] = Instruccion("for ({}; {}; {}){}".format(se[3].texto,
                                                         se[5].texto,
                                                         se[7].texto,
@@ -196,6 +196,16 @@ def p_opassign(se):
             msg += "se esperaba un tipo numérico para " + se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
+
+def p_maybeassign(se):
+    """
+    maybeassign  :
+                 | assign
+    """
+    if len(se) == 2:
+        se[0] = Instruccion(se[1].texto)
+    else:
+        se[0] = Instruccion("")
 
 def p_assign(se):
     """
@@ -265,6 +275,16 @@ def p_call(se):
 
 
 # TERM
+
+def p_maybeexpr(se):
+    """
+    maybeexpr :
+              | expression
+    """
+    if len(se) == 2:
+        se[0] = Termino(se[1].texto, se[1].tipo)
+    else:
+        se[0] = Termino("",None)
 
 def p_expression(se):
     """
