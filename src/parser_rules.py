@@ -36,7 +36,7 @@ def p_error(se):
 
 # INSTR
 
-def p_instrlsit(se):
+def p_instrlist(se):
     """
     instrlist : instaux
               | instaux instrlist
@@ -48,16 +48,40 @@ def p_instrlsit(se):
 
 def p_instr(se):
     """
-    instr : COMMENT
-          | assign SEMICOLON
-          | unarymod SEMICOLON
-          | call SEMICOLON
-          | RETURN expression SEMICOLON
-          | loop
+    instr : commentlist instrop maybecomment
     """
-    if len(se) == 2 and (type(se[1]) is str): # COMMENT
-        se[0] = Instruccion(se[1] + "\n")
-    elif len(se) == 2 and (type(se[1]) is Instruccion): # loop
+    if len(se) == 4:
+        se[0] = Instruccion(se[1] + se[2].texto + se[3])
+
+def p_commentlist(se):
+    """
+    commentlist :
+                | COMMENT commentlist
+    """
+    if len(se) == 3:
+        se[0] = se[1] + "\n" + se[2]
+    else:
+        se[0] = ""
+
+def p_maybecomment(se):
+    """
+    maybecomment :            
+                 | COMMENT
+    """
+    if len(se) == 2: 
+        se[0] = se[1]
+    else:
+        se[0] = ""
+    
+def p_instrop(se):
+    """
+    instrop : assign SEMICOLON
+            | unarymod SEMICOLON
+            | call SEMICOLON
+            | RETURN expression SEMICOLON
+            | loop
+    """
+    if len(se) == 2 and (type(se[1]) is Instruccion): # loop
         se[0] = Instruccion(se[1].texto)
     elif len(se) == 3: # assign SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";\n")
