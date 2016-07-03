@@ -56,12 +56,19 @@ def p_instr(se):
 def p_commentlist(se):
     """
     commentlist :
-                | COMMENT commentlist
+                | COMMENT commentlistaux
     """
     if len(se) == 3:
         se[0] = se[1] + "\n" + se[2]
     else:
         se[0] = ""
+
+#Creada para resolver conflictos shift-reduce
+def p_commentlistaux(se):
+    """
+    commentlistaux : commentlist
+    """
+    se[0] = se[1]
 
 def p_maybecomment(se):
     """
@@ -72,7 +79,7 @@ def p_maybecomment(se):
         se[0] = se[1]
     else:
         se[0] = ""
-    
+
 def p_instrop(se):
     """
     instrop : assign SEMICOLON
@@ -87,6 +94,18 @@ def p_instrop(se):
         se[0] = Instruccion(se[1].texto + ";\n")
     else: ## RETURN expression SEMICOLON
         se[0] = Instruccion("{} {};\n".format(se[1],se[2].texto))
+
+def p_instropfor(se):
+    """
+    instropfor :
+               | assign
+               | unarymod
+               | call
+    """
+    if len(se) == 2:
+        se[0] = Instruccion(se[1].texto)
+    else:
+        se[0] = Instruccion("")
 
 def p_block(se):
     """
@@ -133,11 +152,11 @@ def p_oconditional(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT maybeassign SEMICOLON expression SEMICOLON maybeexpr RPARENT block
+    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
          | WHILE LPARENT expression RPARENT block
          | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
-    if len(se) == 10: # FOR LPARENT maybeassign SEMICOLON expression SEMICOLON mayebeexpr RPARENT block
+    if len(se) == 10: # FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
         se[0] = Instruccion("for ({}; {}; {}){}".format(se[3].texto,
                                                         se[5].texto,
                                                         se[7].texto,
@@ -197,6 +216,7 @@ def p_opassign(se):
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
 
+'''
 def p_maybeassign(se):
     """
     maybeassign  :
@@ -206,7 +226,7 @@ def p_maybeassign(se):
         se[0] = Instruccion(se[1].texto)
     else:
         se[0] = Instruccion("")
-
+'''
 def p_assign(se):
     """
     assign : ID ASSIGN expression
@@ -275,7 +295,7 @@ def p_call(se):
 
 
 # TERM
-
+'''
 def p_maybeexpr(se):
     """
     maybeexpr :
@@ -285,7 +305,7 @@ def p_maybeexpr(se):
         se[0] = Termino(se[1].texto, se[1].tipo)
     else:
         se[0] = Termino("",None)
-
+'''
 def p_expression(se):
     """
     expression : array
