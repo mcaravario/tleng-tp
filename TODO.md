@@ -2,13 +2,16 @@
 
 # Código #
 
-* Soporte para BEGIN y END
+* Soporte para BEGIN y END 
+* (Hecho, solo hay que tenerlos como palabras reservadas)
 
 * For solo con segundo parametro obligatorio
 	Ejemplo: 
 		a=1;
 		for(;true;)
 			a += 1;
+(Hecho, pasa el test del chino, falta ver que termine de pasar los de ralo)
+
 * En los if con cuerpos sin encerrarse entre llaves
   puede ir muchos lineas de comentario y despues la instruccion
 	Ejemplo:
@@ -17,6 +20,7 @@
 			\# Comentario2
 			\# Comentario3
 			a=10;
+(Hecho y funciona)
 
 * Los comentarios pueden ir a la derecha de las instrucciones
 	Ejemplo:
