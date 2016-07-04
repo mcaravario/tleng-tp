@@ -40,91 +40,172 @@
 \newToken{\SUB}{-}
 \newToken{\DIV}{/}
 \newToken{\COLON}{:}
+\newToken{\RETURN}{return}
+\newToken{\LAMBDA}{$\lambda$}
+\newToken{\QUESTION}{?}
+\newToken{\AND}{AND}
+\newToken{\OR}{OR}
+\newToken{\NOT}{NOT}
+\newToken{\LEQ}{$<=$}
+\newToken{\LT}{$<$}
+\newToken{\GEQ}{$>=$}
+\newToken{\GT}{$>$}
+\newToken{\LNOTEQ}{!=}
+\newToken{\EQUAL}{==}
+\newToken{\MOD}{\%}
+\newToken{\POW}{\^}
+\newToken{\INC}{++}
+\newToken{\DEC}{--}
+
 
 % REGLAS
 \subsubsection{Instrucciones}
-\begin{reglas}
-	\regla{INSTRLIST}{INSTR}
-	\aregla{INSTR INSTRLIST}
-	\regla{INSTR}{\COMMENT}
-	\aregla{ASSIGN \SEMICOLON}
-	\aregla{CALL \SEMICOLON}
-	\aregla{CONDITIONAL}
-	\aregla{LOOP}
-\end{reglas}
-\subsubsection{Bloques de código}
-\begin{reglas}
-	\regla{BLOCK}{INSTR}
-	\aregla{\LBRACE INSTRLIST \RBRACE}
-\end{reglas}
-\subsubsection{Condicionales y Ciclos}
-\begin{reglas}
-	\regla{CONDITIONAL}{\IF \LPARENT TERM \RPARENT BLOCK ELSEBRANCH}
-	\regla{ELSEBRANCH}{$\lambda$}
-	\aregla{\ELSE BLOCK}
-	\\
-	\regla{LOOP}{\FOR \LPARENT ASSIGN \SEMICOLON TERM \SEMICOLON TERM \RPARENT BLOCK}
-	\aregla{\WHILE \LPARENT TERM \RPARENT BLOCK}
-	\aregla{\DO BLOCK \WHILE \LPARENT TERM \RPARENT \SEMICOLON}
-\end{reglas}
-\subsubsection{Asignaciones y llamadas a funciones}
-\begin{reglas}
-	\regla{ASSIGN}{\ID ASSIGN TERM}
-	\\
-	\regla{CALL}{FUNNAME \LPARENT TERMLIST \RPARENT}
-	\\
-	\regla{FUNNAME}{\MULTESCALAR}
-	\aregla{\CAPITALIZAR}
-	\aregla{\COLINEALES}
-	\aregla{\PRINT}
-	\aregla{\LENGTH}
-\end{reglas}
-\subsubsection{Operaciones Binarias}
-\begin{reglas}
-  \regla{BINARYOP}{TERM \ADD TERM}
-  \aregla{TERM \SUB TERM}
-  \aregla{TERM \DIV TERM}
-  \aregla{TERM \MULT TERM}
-\end{reglas}
-\subsubsection{Terminos}
-\begin{reglas}
-	\regla{TERM}{\ID}
-	\aregla{\RES}
-	\aregla{LITERAL}
-	\aregla{ARRAY}
-	\aregla{ARRAYMEMBER}
-	\aregla{REGISTER}
-	\aregla{REGISTERMEMBER}
-	\aregla{UNARYOP}
-	\aregla{BINARYOP}
-	\aregla{\LPARENT TERM \RPARENT}
-	\\
-	\regla{TERMLIST}{TERM}
-	\aregla{TERM \COMMA TERMLIST}
-  \\
-	\regla{LITERAL}{\NUMBER}
-  \aregla{\STRING}
-  \aregla{\FALSE}
-  \aregla{\TRUE}
-  
+  \begin{reglas}
+	  \regla{INSTRLIST}{INSTAUX}
+	  \aregla{INSTAUX INSTRLIST}
+    \\	
+    \regla{INSTR}{COMMENTLIST}
+	  \aregla{INSTROP}
+	  \aregla{MAYBECOMMENT}
+	  \\
+    \regla{COMMENTLIST}{\COMMENT COMMENTLIST}
+    \aregla{\LAMBDA}
+    \\
+    \regla{MAYBECOMMENT}{COMMENT}
+    \aregla{\LAMBDA}
+    \\
+    \regla{INSTROP}{ASSIGN \SEMICOLON}
+    \aregla{UNARYMOD \SEMICOLON}
+    \aregla{CALL \SEMICOLON}
+    \aregla{\RETURN EXPRESSION \SEMICOLON}
+    \aregla{LOOP}
+    \\
+    \regla{INSTROPFOR}{ASSIGN}
+    \aregla{UNARYMOD}
+    \aregla{CALL}
+    \aregla{\LAMBDA}
   \end{reglas}
+
+\subsubsection{Bloques de código}
+  \begin{reglas}
+	  \regla{BLOCK}{INSTR}
+	  \aregla{\LBRACE INSTRLIST \RBRACE}
+    \\
+    \regla{BLOCKAUX}{INSTROP}
+	  \aregla{\LBRACE INSTRLIST \RBRACE}
+  \end{reglas}
+
+\subsubsection{Condicionales y Ciclos}
+  \begin{reglas}
+	  \regla{INSTAUX}{MCONDITIONAL}
+    \aregla{OCONDITIONAL}
+	  \\
+    \regla{MCONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT MCONDITIONAL \ELSE MCONDITIONAL}
+    \aregla{BLOCK}
+    \\
+    \regla{OCONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT MCONDITIONAL \ELSE OCONDITIONAL}
+	  \aregla{\IF \LPARENT EXPRESSION \RPARENT INSTAUX}
+    \\
+    \regla{LOOP}{\FOR \LPARENT INSTROPFOR \SEMICOLON EXPRESSION \SEMICOLON
+    INSTROPFOR \RPARENT BLOCKAUX}
+    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKAUX}
+    \aregla{\DO BLOCK \WHILE \LPARENT EXPRESSION \RPARENT \SEMICOLON}
+  \end{reglas}
+
+\subsubsection{Asignaciones y llamadas a funciones}
+  \begin{reglas}
+	  \regla{ASSIGNOP}{ADDEQ}
+    \aregla{SUBEQ}
+    \aregla{DIVEQ}
+    \aregla{MULTEQ}
+	  \\
+	  \regla{ASSIGN}{\ID ASSIGNOP EXPRESSION}
+    \aregla{ARRAYMEMBER ASSIGNOP EXPRESSION}
+    \aregla{REGISTERMEMBER ASSIGNOP EXPRESSION}
+	  \\
+	  \regla{CALL}{\MULTESCALAR \LPARENT EXPRESSIONLIST \RPARENT}
+    \aregla{\CAPITALIZAR \LPARENT EXPRESSIONLIST \RPARENT}
+    \aregla{\COLINEALES \LPARENT EXPRESSIONLIST \RPARENT}
+    \aregla{\PRINT \LPARENT EXPRESSIONLIST \RPARENT}
+    \aregla{\LENGTH \LPARENT EXPRESSIONLIST \RPARENT}
+  \end{reglas}
+
+\subsubsection{Términos}
+  \begin{reglas}
+	  \regla{EXPRESSION}{ARRAY}
+	  \aregla{REGISTER}
+	  \aregla{LBINARYOP}
+	  \aregla{EXPRESSION \QUESTION EXPRESSION \COLON LCOMP}
+	  \\
+    \regla{EXPRESSIONLIST}{EXPRESSION}
+    \aregla{EXPRESSION \COMMA EXPRESSIONLIST} 
+    \\
+	  \regla{LITERAL}{\NUMBER}
+    \aregla{\STRING}
+    \aregla{\FALSE}
+    \aregla{\TRUE}
+  \end{reglas}  
+
 \subsubsection{Arreglos}
   \begin{reglas}
-  \regla{ARRAY}{\LBRACKET TERMLIST \RBRACKET}
-  \\
-  \regla{ARRAYMEMBER}{\ID \LBRACKET TERM \RBRACKET}
-  \end{reglas}
-\subsubsection{Registros}
-  \begin{reglas}
-  \regla{REGISTER}{\LBRACE REGISTERLIST \RBRACE}
-  \\
-  \regla{REGISTERLIST}{\ID \COLON TERM}
-  \aregla{\ID \COLON TERM \COMMA REGISTERLIST}
-  \\
-  \regla{REGISTERMEMBER}{\ID \DOT \ID}
+    \regla{ARRAY}{\LBRACKET EXPRESSIONLIST \RBRACKET}
+    \\
+    \regla{ARRAYMEMBER}{VAR \LBRACKET EXPRESSION \RBRACKET}
+    \\
+    \regla{REGISTER}{\LBRACE REGISTERLIST \RBRACE}
+    \\
+    \regla{REGISTERLIST}{\ID \COLON EXPRESSION}
+    \aregla{\ID \COLON EXPRESSION \COMMA REGISTERLIST}
+    \aregla{\LAMBDA}
+    \\ 
+    \regla{REGISTERMEMBER}{\ID \DOT \ID}
+  \end{reglas}  
 
-  \end{reglas}
-  \subsubsection{Operaciones Unarias}
+\subsubsection{Operaciones Binarias}
   \begin{reglas}
-  \regla{UNARYOP}{TERM}
+    \regla{LBINARYOP}{EXPRESSION \AND LCOMP}
+    \aregla{EXPRESSION \OR LCOMP}
+    \aregla{LCOMP}
+    \\
+    \regla{LCOMP}{LCOMP \LEQ BINARYOP}
+    \aregla{LCOMP \GEQ BINARYOP}
+    \aregla{LCOMP \LT BINARYOP}
+    \aregla{LCOMP \GT BINARYOP}
+    \aregla{LCOMP \EQUAL BINARYOP}
+    \aregla{LCOMP \LNOTEQ BINARYOP}
+    \aregla{BINARYOP}
+    \\
+    \regla{BINARYOP}{BINARYOP \ADD TERM}
+    \aregla{BINARYOP \SUB TERM}
+    \aregla{TERM}
+    \\
+    \regla{TERM}{TERM \MULT UNARYOP}
+    \aregla{TERM \DIV UNARYOP}
+    \aregla{TERM \MOD UNARYOP}
+    \aregla{TERM \POW UNARYOP}
+    \aregla{UNARYOP}
+  \end{reglas}
+
+\subsubsection{Operaciones Unarias}
+  \begin{reglas}
+    \regla{UNARYMOD}{\INC VAR}
+    \aregla{\DEC VAR}
+    \aregla{VAR \INC}
+    \aregla{VAR \DEC}
+    \\
+    \regla{UNARYOP}{\ADD UNARYOP}
+    \aregla{\SUB UNARYOP}
+    \aregla{\NOT UNARYOP}
+    \aregla{UNARYMOD}
+    \aregla{FACTOR}
+    \\
+    \regla{VAR}{\ID}
+    \aregla{\RES}
+    \aregla{ARRAYMEMBER}
+    \aregla{REGISTERMEMBER}
+    \\
+    \regla{FACTOR}{LITERAL}
+    \aregla{VAR}
+    \aregla{CALL}
+    \aregla{\LPARENT EXPRESSION \RPARENT}
   \end{reglas}
