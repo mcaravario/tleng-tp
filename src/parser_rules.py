@@ -56,7 +56,7 @@ def p_instr(se):
 def p_commentlist(se):
     """
     commentlist :
-                | COMMENT commentlistaux
+                | COMMENT commentlist
     """
     if len(se) == 3:
         se[0] = se[1] + se[2]
@@ -195,7 +195,7 @@ def p_opassign(se):
         if se[2] == "+=" and not (se[1].tipo in ["NUMBER", "STRING"]):
             msg += "se esperaba un tipo numérico o string para +="
             raise Exception(msg)
-        elif s[2] in ["-=","*=","/="] and not (se[1].tipo == "NUMBER"):
+        elif se[2] in ["-=","*=","/="] and not (se[1].tipo == "NUMBER"):
             msg += "se esperaba un tipo numérico para " ++ se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
