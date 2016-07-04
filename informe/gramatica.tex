@@ -284,4 +284,88 @@ t\_QUESTION = r"\textbackslash?"
 t\_DOT = r"\textbackslash."
                                                          
 t\_COMMA = r","
-                                                         
+
+\subsection{Explicación de la gramática}
+La gramática utilizada en trabajo practico es de tipo LALR(Look-Ahead LR
+parser), la cual es un tipo de gramatica LR(1) simplificada. Podemos justificar
+que nuestra gramatica es LALR, debido a que utilizamos la herramienta de
+parseo de python PLY. Esta herramienta genera las tablas de parseo utilizando
+el algoritmo LALR que usa YACC, y como no se generan conflictos de tipo
+shift/reduce ni de tipo reduce/reduce en esa tabla, podemos afirmar que nuestra
+gramática es de tipo LALR.
+
+\subsection{Resolucion de conflictos}
+\begin{enumerate}
+    
+\item Uno de los conflictos que se nos presentó fue al momento de parsear los
+operadores ternarios. Por ejemplo para la entrada: e ? e : e + c, el parser
+tenia dos derivaciones posibles. En una asociaba el termino de la derecha con
+parentesis de la siguiente forma: e ? e : ( e + c ), y en la otra lo hacia
+asociando a izquierda : (e ? e : e) + c. \\
+Es por esto que decidimos cambiar nuestra regla: 
+\\
+\begin{reglas}
+\regla{TERM}{\LPARENT EXPRESSION \RPARENT \QUESTION EXPRESSION \COLON EXPRESSION}
+\\
+Por una de la siguiente forma:
+\\
+\regla{TERM}{EXPRESSION \QUESTION EXPRESSION \COLON LCOMP}
+\end{reglas}
+Esto permitió que el parser utilize como delimitador cada simbolo no terminal
+antes de seguir parseando.
+
+\TODO
+\item Otro conflicto que nos presento la gramatica fue el llamado Dangling else
+  ......
+
+\item Un conflicto de ambiguedad de la gramatica que se nos presento fue que
+  podiamos derivar en un literal de dos formas distintas, ya sea por expresion -> literal
+  como por expresion -> binary\_op -> factor -> literal. Es por esto que decidimos cambiar la
+  gramatica agregando la regla FACTOR y quitando la produccion EXPRESSION ->
+  LITERAL, de la siguiente forma:
+  \begin{reglas} 
+  \regla{FACTOR}{LITERAL}
+  \aregla{\LPARENT EXPRESSION \RPARENT}
+  \end{reglas}
+
+\item Otro conflicto que tuvimos fue el de la ambiguedad de los operadores
+  binarios y sus conflictos de precedencia. Es por eso que decidimos modificar
+  nuestra gramatica, la cual era:
+
+  \begin{reglas}
+    \regla{BINARYOP}{TERM \ADD TERM}
+    \aregla{TERM \SUB TERM}
+    \aregla{TERM \MULT TERM}
+    \aregla{TERM \DIV TERM}
+    \aregla{TERM \MOD TERM}
+    \aregla{TERM \POW TERM}
+    \aregla{TERM \AND TERM}
+    \aregla{TERM \OR TERM}
+    \aregla{TERM \LT TERM}
+    \aregla{TERM \LEQ TERM}
+    \aregla{TERM \GEQ TERM}
+    \aregla{TERM \EQUAL TERM}
+    \aregla{TERM \LNOTEQ TERM}
+    \\
+    Por una modularizada que separa terminos de expresiones y de factores
+    permitiendo resolver la ambiguedad presentada, de la siguiente forma:
+    \\
+    \regla{BINARYOP}{EXPRESSION \ADD TERM}
+    \aregla{EXPRESSION \SUB TERM}
+    \aregla{TERM}
+    \\
+    \regla{TERM}{TERM \MULT FACTOR}
+    \aregla{TERM \DIV FACTOR}
+    \aregla{TERM \DIV FACTOR}
+    \aregla{TERM \DIV FACTOR}
+    \aregla{TERM \DIV FACTOR}
+    \aregla{TERM \DIV FACTOR}
+    \\ 
+    \regla{FACTOR}{LITERAL}
+    \aregla{\LPARENT EXPRESSION \RPARENT}
+  \end{reglas}
+
+
+
+
+
