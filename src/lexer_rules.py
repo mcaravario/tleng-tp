@@ -31,7 +31,9 @@ def t_ID(tok):
 
 t_ignore_WHITESPACES = r"[ \t]+"
 
-t_COMMENT = r"\#.*"
+t_COMMENT = r"[ ]+\#.*"
+
+t_COMMENT_NL = r"\#.*"
 
 t_SEMICOLON = r";"
 

@@ -49,14 +49,15 @@ def p_instrlist(se):
 def p_instr(se):
     """
     instr : commentlist instrop maybecomment
+          
     """
     if len(se) == 4:
         se[0] = Instruccion(se[1] + se[2].texto + se[3] + "\n")
 
 def p_commentlist(se):
     """
-    commentlist :
-                | COMMENT commentlistaux
+    commentlist : 
+                | COMMENT_NL commentlist
     """
     if len(se) == 3:
         se[0] = se[1] + se[2]
@@ -66,7 +67,7 @@ def p_commentlist(se):
 def p_maybecomment(se):
     """
     maybecomment :            
-                 | COMMENT
+                 | COMMENT_NL
     """
     if len(se) == 2: 
         se[0] = se[1]

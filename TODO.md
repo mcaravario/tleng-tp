@@ -5,7 +5,7 @@
 * Los comentarios pueden ir a la derecha de las instrucciones
 	Ejemplo:
 		a=10; #Comentario
-
+  (Parcialmente, puedo tener archivo con solo comentarios?)
 * Soportar indexación de vectores/matrices de registros
 	Ejemplo:
 		a = {v1:[1,2],v2:[3,4]};

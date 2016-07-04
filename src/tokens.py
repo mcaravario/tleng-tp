@@ -26,6 +26,7 @@ tokens = [
     'SEMICOLON',
     'COLON',
     'COMMENT',
+    'COMMENT_NL',
     'RBRACE',
     'LBRACE',
     'RBRACKET',
