@@ -209,3 +209,79 @@
     \aregla{CALL}
     \aregla{\LPARENT EXPRESSION \RPARENT}
   \end{reglas}
+
+
+\subsection{Expresiones regulares de los tokens}
+
+t\_NEWLINE = r"\textbackslash n+"
+
+t\_NUMBER = r"[0-9]+(\textbackslash.[0-9]+)?" 
+
+t\_STRING = r"\textbackslash"[\^ \textbackslash"]*\textbackslash""
+
+t\_ID = r"[a-zA-Z][a-zA-Z0-9\_]*"
+
+t\_ignore\_WHITESPACES = r"[ \textbackslash t]+"
+
+t\_COMMENT = r"\textbackslash\#.*"
+
+t\_SEMICOLON = r";"
+
+t\_COLON = r":"
+ 
+t\_RBRACE = r"\}"
+ 
+t\_LBRACE = r"\{"
+
+t\_RBRACKET = r"\textbackslash]"
+      
+t\_LBRACKET = r"\textbackslash["
+           
+t\_RPARENT = r"\textbackslash)"
+             
+t\_LPARENT = r"\textbackslash("
+              
+t\_ADD = r"\textbackslash+"
+                
+t\_ADDEQ = r"\textbackslash+="
+                   
+t\_INC = r"\textbackslash+\textbackslash+"
+                    
+t\_DEC = r"--"
+                     
+t\_ASSIGN = r"="
+                        
+t\_EQUAL = r"=="
+                          
+t\_SUB = r"-"
+                           
+t\_SUBEQ = r"-="
+                               
+t\_MULT = r"\textbackslash*"
+                                 
+t\_MULTEQ = r"\textbackslash*="
+                                   
+t\_DIV = r"/"
+                                     
+t\_DIVEQ = r"/="
+                                       
+t\_POW = r"\textbackslash \^"
+                                         
+t\_MOD = r"\%"
+                                           
+t\_LT = r"$<$"
+                                            
+t\_LEQ = r"$<=$"
+                                               
+t\_GEQ = r"$>=$"
+                                                 
+t\_GT = r"$>$"
+                                                   
+t\_LNOTEQ = r"$!=$"
+                                                     
+t\_QUESTION = r"\textbackslash?"
+                                                      
+t\_DOT = r"\textbackslash."
+                                                         
+t\_COMMA = r","
+                                                         
