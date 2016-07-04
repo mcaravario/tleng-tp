@@ -305,24 +305,28 @@ asociando a izquierda : (e ? e : e) + c. \\
 Es por esto que decidimos cambiar nuestra regla: 
 \\
 \begin{reglas}
-\regla{TERM}{\LPARENT EXPRESSION \RPARENT \QUESTION EXPRESSION \COLON EXPRESSION}
+  \regla{TERM}{\LPARENT EXPRESSION \RPARENT \QUESTION EXPRESSION \COLON EXPRESSION}
+\end{reglas}
 \\
 Por una de la siguiente forma:
 \\
-\regla{TERM}{EXPRESSION \QUESTION EXPRESSION \COLON LCOMP}
+\begin{reglas}
+  \regla{TERM}{EXPRESSION \QUESTION EXPRESSION \COLON LCOMP}
 \end{reglas}
+\\
 Esto permitió que el parser utilize como delimitador cada simbolo no terminal
 antes de seguir parseando.
 
-\TODO
 \item Otro conflicto que nos presento la gramatica fue el llamado Dangling else
   ......
 
 \item Un conflicto de ambiguedad de la gramatica que se nos presento fue que
-  podiamos derivar en un literal de dos formas distintas, ya sea por expresion -> literal
-  como por expresion -> binary\_op -> factor -> literal. Es por esto que decidimos cambiar la
-  gramatica agregando la regla FACTOR y quitando la produccion EXPRESSION ->
+  podiamos derivar en un literal de dos formas distintas, ya sea por EXPRESSION
+  --$>$ LITERAL, como por EXPRESSION --$>$ BINARYOP --$>$ FACTOR --$>$ LITERAL. Es por esto que decidimos cambiar la
+  gramatica agregando la regla FACTOR y quitando la produccion EXPRESSION --$>$
   LITERAL, de la siguiente forma:
+  \\
+  \\
   \begin{reglas} 
   \regla{FACTOR}{LITERAL}
   \aregla{\LPARENT EXPRESSION \RPARENT}
@@ -346,10 +350,12 @@ antes de seguir parseando.
     \aregla{TERM \GEQ TERM}
     \aregla{TERM \EQUAL TERM}
     \aregla{TERM \LNOTEQ TERM}
+  \end{reglas}
     \\
     Por una modularizada que separa terminos de expresiones y de factores
     permitiendo resolver la ambiguedad presentada, de la siguiente forma:
     \\
+  \begin{reglas}
     \regla{BINARYOP}{EXPRESSION \ADD TERM}
     \aregla{EXPRESSION \SUB TERM}
     \aregla{TERM}
@@ -364,7 +370,7 @@ antes de seguir parseando.
     \regla{FACTOR}{LITERAL}
     \aregla{\LPARENT EXPRESSION \RPARENT}
   \end{reglas}
-
+\end{enumerate}
 
 
 
