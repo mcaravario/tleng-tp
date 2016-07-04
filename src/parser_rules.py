@@ -51,7 +51,7 @@ def p_instr(se):
     instr : commentlist instrop maybecomment
     """
     if len(se) == 4:
-        se[0] = Instruccion(se[1] + se[2].texto + se[3])
+        se[0] = Instruccion(se[1] + se[2].texto + se[3] + "\n")
 
 def p_commentlist(se):
     """
@@ -59,16 +59,9 @@ def p_commentlist(se):
                 | COMMENT commentlistaux
     """
     if len(se) == 3:
-        se[0] = se[1] + "\n" + se[2]
+        se[0] = se[1] + se[2]
     else:
         se[0] = ""
-
-#Creada para resolver conflictos shift-reduce
-def p_commentlistaux(se):
-    """
-    commentlistaux : commentlist
-    """
-    se[0] = se[1]
 
 def p_maybecomment(se):
     """
@@ -91,9 +84,9 @@ def p_instrop(se):
     if len(se) == 2 and (type(se[1]) is Instruccion): # loop
         se[0] = Instruccion(se[1].texto)
     elif len(se) == 3: # assign SEMICOLON | call SEMICOLON
-        se[0] = Instruccion(se[1].texto + ";\n")
+        se[0] = Instruccion(se[1].texto + ";")
     else: ## RETURN expression SEMICOLON
-        se[0] = Instruccion("{} {};\n".format(se[1],se[2].texto))
+        se[0] = Instruccion("{} {};".format(se[1],se[2].texto))
 
 def p_instropfor(se):
     """
@@ -117,6 +110,15 @@ def p_block(se):
     else: # LBRACE instrlist RBRACE
         se[0] = Bloque(se[2].texto)
 
+def p_blockaux(se):
+    """
+    blockaux : instrop
+             | LBRACE instrlist RBRACE
+    """
+    if len(se) == 2: # instr
+        se[0] = Instruccion(se[1].texto)
+    else: # LBRACE instrlist RBRACE
+        se[0] = Bloque(se[2].texto)
 
 # CONDITIONALS
 
@@ -152,8 +154,8 @@ def p_oconditional(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
-         | WHILE LPARENT expression RPARENT block
+    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT blockaux
+         | WHILE LPARENT expression RPARENT blockaux
          | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
     if len(se) == 10: # FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
@@ -170,7 +172,6 @@ def p_loop(se):
             se[0] = Instruccion("do {} while ({});\n".format(formatBlock(se[2]).rstrip(), se[5].texto))
         else:
             se[0] = Instruccion("do {}while ({});\n".format(formatBlock(se[2]), se[5].texto))
-
 
 # ASSIGN
 

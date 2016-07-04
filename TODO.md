@@ -2,26 +2,6 @@
 
 # Código #
 
-* Soporte para BEGIN y END 
-* (Hecho, solo hay que tenerlos como palabras reservadas)
-
-* For solo con segundo parametro obligatorio
-	Ejemplo: 
-		a=1;
-		for(;true;)
-			a += 1;
-(Hecho, pasa el test del chino, falta ver que termine de pasar los de ralo)
-
-* En los if con cuerpos sin encerrarse entre llaves
-  puede ir muchos lineas de comentario y despues la instruccion
-	Ejemplo:
-		if(true)
-			\# Comentario1
-			\# Comentario2
-			\# Comentario3
-			a=10;
-(Hecho y funciona)
-
 * Los comentarios pueden ir a la derecha de las instrucciones
 	Ejemplo:
 		a=10; #Comentario
@@ -45,6 +25,8 @@
 	* Dangling else
 	* Ambiguedad en la escritura de las operaciones aritméticas
 	* Eleccion de precedencia
+  * Ambiguedad en las listas
+  * Conflicto con los comentarios (nueva linea y despues de instruccion)
 	* etc
 	
 * Ir poniendo pruebas de codigo validas e invalidas en la
