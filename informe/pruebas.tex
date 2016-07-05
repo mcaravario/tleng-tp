@@ -1,1 +1,128 @@
 \section{Pruebas}
+A continuación presentaremos algunos casos de prueba con expresiones del
+lenguaje sintacticamente correctas e incorrectas, analizando en cada caso que
+deberia devolver el parser.
+
+\subsection{Expresiones Correctas}
+\begin{enumerate}
+\item
+Un ejemplo de una expresion sintacticamente valida seria la siguiente:
+\begin{verbatim}
+a = 0;
+for (; true; ) for (; false; ) {a=10;}
+\end{verbatim}
+En este caso el ejemplo es correcto ya que solamente el segundo parametro del
+for es obligatorio, y la sentencia es de una linea, es por eso que no
+necesita ir entre llaves. El parser deberia devolver lo siguiente:
+\begin{verbatim}
+a = 0;
+for (; true; )
+  for (; false; ) {
+    a = 10;
+  }
+\end{verbatim}
+
+\item Otro caso podria ser la siguiente expresion:
+  \begin{verbatim}
+  x = 5;
+  y = 10;
+  j = [true, false];
+  k = [1, 2, 3];
+ 
+
+
+  m = ((x + k[2] > 3) ? 2 ^ k[0] : (j[2] ? k[1] + 6 : (y)));
+  \end{verbatim}
+  En este caso todas las asignaciones son correctas, tanto las de valores como
+  las de los arreglos. Tambien es correcto el uso del operador ternario, cuyo
+  primer parametro es una expresion booleana correctamente formada y el segundo
+  y tercer parametro son expresiones de enteros correctas.
+
+  El parser deberia devolver la misma expresion sin indentaciones, solamente
+  eliminando los saltos de linea entre la declaracion de k y m de la siguiente
+  forma:
+\begin{verbatim}
+  x = 5;
+  y = 10;
+  j = [true, false];
+  k = [1, 2, 3];
+  m = ((x + k[2] > 3) ? 2 ^ k[0] : (j[2] ? k[1] + 6 : (y)));
+  \end{verbatim}
+
+
+\item Finalmente otra expresion correcta seria:
+
+\begin{verbatim}
+usuarios = [{nombre:"Mr.X", edad:10}, usuario];
+suma = 0;
+for (i = 0; i < length(usuarios); i++) {
+print(usuarios[i].nombre);
+suma += usuarios[i].edad;
+}
+k = {list:["A", "B", "c"], doublelist:j};
+
+a += k.doublelist[0][1];
+\end{verbatim}
+La cual es una expresion correcta, pues todos los registros cumplen con las
+reglas sintacticas, tanto la declaracion como la asignacion de ellos. Tambien
+son expresiones correctamente validas el print y el for. En este caso el parser
+devolvera lo mismo pero sin el salto de linea entre la declaracion de k y a, y
+tambien indentara de manera adecuada las intrucciones dentro del for de la
+siguiente forma:
+
+\begin{verbatim}
+usuarios = [{nombre:"Mr.X", edad:10}, usuario];
+suma = 0;
+for (i = 0; i < length(usuarios); i++) {
+  print(usuarios[i].nombre);
+  suma += usuarios[i].edad;
+}
+k = {list:["A", "B", "c"], doublelist:j};
+a += k.doublelist[0][1];
+\end{verbatim}
+
+\end{enumerate}
+
+\subsection{Expresiones Incorrectas}
+
+\begin{enumerate}
+\item Una expresion sintacticamente incorrecta sería:
+  \begin{verbatim}
+  a = 5;
+  if(true){
+    a=0:
+  }else{
+    a=20;
+  }else{
+    a=3
+  }
+  \end{verbatim}
+  En este caso la expresion es incorrecta ya que el segundo else no se
+  corresponde con ningun if anterior, es por eso que el parser dara error y
+  devolvera el numero de linea en donde se produjo el error.
+
+\item Otro caso de una expresion incorrecta podria ser:
+  \begin{verbatim}
+  res=1;
+  do{
+    res+=3
+  }while{res > 0};
+  return res;
+  \end{verbatim}
+  En este caso el programa es incorrecto, ya que utiliza palabras reservadas
+  del lenguaje para variables, como son el caso de res y de return. Es por eso
+  que el parser deberia fallar.
+\item Finalmente, como ultimo ejemplo tenemos:
+  \begin{verbatim}
+  array1 = ['a','b','c','d']
+  array2 = [1,2,3,4]
+  letra1 = array1[array2[1]];
+  letra2 = array1['a'];
+  \end{verbatim}
+  En este caso la letra1, se genera de forma correcta, indexando un numero en
+  el array1, mientras que la letra2 se genera de forma incorrecta, ya que el
+  indice no es un numero natural sino una letra. Es por esto que el parser
+  falla.
+\end{enumerate}
+
+
