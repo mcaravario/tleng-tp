@@ -12,7 +12,7 @@ def tab(s):
 
 
 def lineerr(n):
-    return "Error de parseo en línea {}: ".format(n)
+    return "Error de parseo en linea {}: ".format(n)
 
 def formatBlock(t):
     if type(t) is Bloque:
@@ -166,7 +166,7 @@ def p_loop(se):
     elif len(se) == 6: # WHILE LPARENT expression RPARENT block
         se[0] = Instruccion("while ({}) {}".format(se[3].texto, formatBlock(se[5])))
     else: # DO block WHILE LPARENT expression RPARENT SEMICOLON
-        # esto no puede generar una excepción IndexError, pues los terminos son
+        # esto no puede generar una excepcion IndexError, pues los terminos son
         # no vacios y los bloques siempre terminan en '\n'
         if se[2].texto[-2] == "}":
             se[0] = Instruccion("do {} while ({});\n".format(formatBlock(se[2]).rstrip(), se[5].texto))
@@ -193,10 +193,10 @@ def p_opassign(se):
     if type(se[1]) is Termino: # arraymember ASSIGN expression | registermember ASSIGN expression
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[2])
         if se[2] == "+=" and not (se[1].tipo in ["NUMBER", "STRING"]):
-            msg += "se esperaba un tipo numérico o string para +="
+            msg += "se esperaba un tipo numerico o string para +="
             raise Exception(msg)
         elif se[2] in ["-=","*=","/="] and not (se[1].tipo == "NUMBER"):
-            msg += "se esperaba un tipo numérico para " ++ se[2];
+            msg += "se esperaba un tipo numerico para " ++ se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
     else:
@@ -210,10 +210,10 @@ def p_opassign(se):
             msg += "tipo de la expresion"
             raise Exception(msg)
         if se[2] == "+=" and tipo not in ["NUMBER", "STRING"]:
-            msg += "se esperaba un tipo numérico o string para +="
+            msg += "se esperaba un tipo numerico o string para +="
             raise Exception(msg)
         elif se[2] != "+=" and tipo != "NUMBER":
-            msg += "se esperaba un tipo numérico para " + se[2];
+            msg += "se esperaba un tipo numerico para " + se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
 
@@ -261,9 +261,9 @@ def p_call(se):
     if se[1] == "multiplicacionEscalar":
         tipo = "ARR_NUMBER"
         if len(se[3]) != 2 and len(se[3]) != 3:
-            raise Exception(msg + "se esparaban 2 o 3 parámetros")
+            raise Exception(msg + "se esparaban 2 o 3 parametros")
         if se[3][0].tipo != "ARR_NUMBER":
-            raise Exception(msg + "se esperaba un arreglo numérico")
+            raise Exception(msg + "se esperaba un arreglo numerico")
         if se[3][1].tipo != "NUMBER":
             raise Exception(msg + "se esparaba un escalar")
         if len(se[3]) == 3 and se[3][2].tipo != "BOOL":
@@ -271,27 +271,27 @@ def p_call(se):
     elif se[1] == "capitalizar":
         tipo = "STRING"
         if len(se[3]) != 1:
-            raise Exception(msg + "se esperaba un parámetro")
+            raise Exception(msg + "se esperaba un parametro")
         if se[3][0].tipo != "STRING":
             raise Exception(msg + "se esperaba una cadena")
     elif se[1] == "colineales":
         tipo = "BOOL"
         if len(se[3]) != 2:
-            raise Exception(msg + "se esperaban 2 parámetros")
+            raise Exception(msg + "se esperaban 2 parametros")
         if se[3][0].tipo != "ARR_NUMBER" or se[3][1].tipo != "ARR_NUMBER":
-            raise Exception(msg + "se esperaban arreglos numéricos")
+            raise Exception(msg + "se esperaban arreglos numericos")
     elif se[1] == "print":
         tipo = "PRINT"
         if len(se[3]) != 1:
-            raise Exception(msg + "se esperaba un parámetro")
+            raise Exception(msg + "se esperaba un parametro")
     elif se[1] == "length":
         tipo = "NUMBER"
         if len(se[3]) != 1:
-            raise Exception(msg + "se esperaba un parámetro")
+            raise Exception(msg + "se esperaba un parametro")
         if se[3][0].tipo != "STRING" and not se[3][0].tipo.startswith("ARR_"):
             raise Exception(msg + "se esperaba una cadena o un arreglo")
     else:
-        raise Exception(msg + "función desconocida")
+        raise Exception(msg + "funcion desconocida")
     se[0] = Termino("{}({})".format(se[1], ", ".join(t.texto for t in se[3])), tipo)
 
 
@@ -317,7 +317,7 @@ def p_expression(se):
     if len(se) == 6: # LPARENT expression RPARENT QUESTION expression COLON expression
         msg = lineerr(se.lineno(2))
         if se[1].tipo != "BOOL":
-            msg += "se esperaba una expresión booleana"
+            msg += "se esperaba una expresion booleana"
             raise Exception(msg)
         elif se[3].tipo != se[5].tipo:
             msg += "las ramas del operador ?: deben tener el mismo tipo"
@@ -369,7 +369,7 @@ def p_arraymember(se):
     """
     msg = lineerr(se.lineno(1))
     if se[3].tipo != "NUMBER":
-        msg += "el índice del arreglo no es numérico"
+        msg += "el indice del arreglo no es numerico"
         raise Exception(msg)
     msg += se[1].texto + ": "
     if not se[1].tipo.startswith("ARR_"):
@@ -469,9 +469,10 @@ def p_binaryop(se):
         if se[1].tipo != se[3].tipo:
             raise Exception(msg + "los tipos no coinciden")
         elif se[2] == "+" and se[1].tipo not in ["NUMBER", "STRING"]:
-                raise Exception(msg + "se esparaban números o cadenas, se encontró " + se[1].tipo)
+                raise Exception(msg + "se esparaban numeros o cadenas, se
+                        encontro " + se[1].tipo)
         elif se[2] == "-" and se[1].tipo != "NUMBER":
-            raise Exception(msg + "se esperaban números")
+            raise Exception(msg + "se esperaban numeros")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
 def p_term(se):
@@ -489,7 +490,7 @@ def p_term(se):
         if se[1].tipo != se[3].tipo:
             raise Exception(msg + "los tipos no coinciden")
         elif se[1].tipo != "NUMBER":
-            raise Exception(msg + "se esperaban números")
+            raise Exception(msg + "se esperaban numeros")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
 # UNARYOP
@@ -503,12 +504,12 @@ def p_unarymod(se):
     if(type(se[1]) is Termino):
         msg = "{}: ".format(lineerr(se.lineno(1)))
         if se[1].tipo != "NUMBER":
-            raise Exception(msg + " se esperaba numérico para" ++ se[1])
+            raise Exception(msg + " se esperaba numerico para" ++ se[1])
         se[0] = Termino(se[1].texto + se[2],se[1].tipo)
     else:
         msg = "{}: ".format(lineerr(se.lineno(1)))
         if se[2].tipo != "NUMBER":
-            raise Exception(msg + " se esperaba numérico para" ++ se[1])
+            raise Exception(msg + " se esperaba numerico para" ++ se[1])
         se[0] = Termino(se[1] + se[2].texto,se[2].tipo)
 
 def p_unaryop(se):
@@ -530,7 +531,7 @@ def p_unaryop(se):
         elif se[1] != "NOT":
             msg = "{}: ".format(lineerr(se.lineno(1)))
             if se[2].tipo != "NUMBER":
-                raise Exception(msg + " se esperaba numérico para" ++ se[1])
+                raise Exception(msg + " se esperaba numerico para" ++ se[1])
             se[0] = Termino("{}{}".format(se[1], se[2].texto), se[2].tipo)
 
 
