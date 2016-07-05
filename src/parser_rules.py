@@ -76,6 +76,7 @@ def p_maybecomment(se):
 def p_instrop(se):
     """
     instrop : assign SEMICOLON
+            | assigneq SEMICOLON
             | unarymod SEMICOLON
             | call SEMICOLON
             | RETURN expression SEMICOLON
@@ -175,7 +176,7 @@ def p_loop(se):
 
 # ASSIGN
 
-def p_assign_number(se):
+def p_assignop(se):
     """
     assignop : ADDEQ
              | SUBEQ
@@ -184,11 +185,11 @@ def p_assign_number(se):
     """
     se[0] = se[1]
 
-def p_opassign(se):
+def p_assigneq(se):
     """
-    assign : ID assignop expression
-           | arraymember assignop expression
-           | registermember assignop expression
+    assigneq : ID assignop expression
+             | arraymember assignop expression
+             | registermember assignop expression
     """
     if type(se[1]) is Termino: # arraymember ASSIGN expression | registermember ASSIGN expression
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[2])
@@ -469,8 +470,7 @@ def p_binaryop(se):
         if se[1].tipo != se[3].tipo:
             raise Exception(msg + "los tipos no coinciden")
         elif se[2] == "+" and se[1].tipo not in ["NUMBER", "STRING"]:
-                raise Exception(msg + "se esparaban numeros o cadenas, se
-                        encontro " + se[1].tipo)
+            raise Exception(msg + "se esparaban numeros o cadenas, se encontro " + se[1].tipo)
         elif se[2] == "-" and se[1].tipo != "NUMBER":
             raise Exception(msg + "se esperaban numeros")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)

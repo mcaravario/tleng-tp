@@ -56,6 +56,11 @@
 \newToken{\POW}{\^}
 \newToken{\INC}{++}
 \newToken{\DEC}{--}
+\newToken{\ADDEQ}{+=}
+\newToken{\SUBEQ}{-=}
+\newToken{\DIVEQ}{/=}
+\newToken{\MULTEQ}{*=}
+\newToken{\ASSIGN}{=}
 
 
 % REGLAS
@@ -81,6 +86,7 @@
     \aregla{LOOP}
     \\
     \regla{INSTROPFOR}{ASSIGN}
+    \aregla{ASSIGNEQ}
     \aregla{UNARYMOD}
     \aregla{CALL}
     \aregla{\LAMBDA}
@@ -114,14 +120,18 @@
 
 \subsubsection{Asignaciones y llamadas a funciones}
   \begin{reglas}
-	  \regla{ASSIGNOP}{ADDEQ}
-    \aregla{SUBEQ}
-    \aregla{DIVEQ}
-    \aregla{MULTEQ}
+	  \regla{ASSIGNOP}{\ADDEQ}
+    \aregla{\SUBEQ}
+    \aregla{\DIVEQ}
+    \aregla{\MULTEQ}
 	  \\
-	  \regla{ASSIGN}{\ID ASSIGNOP EXPRESSION}
+	  \regla{ASSIGNEQ}{\ID ASSIGNOP EXPRESSION}
     \aregla{ARRAYMEMBER ASSIGNOP EXPRESSION}
     \aregla{REGISTERMEMBER ASSIGNOP EXPRESSION}
+	  \\
+    \regla{ASSIGN}{\ID \ASSIGN EXPRESSION}
+    \aregla{ARRAYMEMBER \ASSIGN EXPRESSION}
+    \aregla{REGISTERMEMBER \ASSIGN EXPRESSION}
 	  \\
 	  \regla{CALL}{\MULTESCALAR \LPARENT EXPRESSIONLIST \RPARENT}
     \aregla{\CAPITALIZAR \LPARENT EXPRESSIONLIST \RPARENT}
