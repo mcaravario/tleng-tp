@@ -7,7 +7,7 @@ def t_error(tok):
     raise Exception(msg)
 
 def t_COMMENT(tok):
-    r"^\#.*|\n\#.*"
+    r"^[ \t]*\#.*|\n[ \t]*\#.*"
     tok.value = tok.value[tok.value.find("#"):]
     tok.lexer.lineno += 1
     return tok
