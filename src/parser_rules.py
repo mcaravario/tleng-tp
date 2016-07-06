@@ -10,6 +10,24 @@ register_types = {}
 def tab(s):
     return "".join(["\t" + v for v in s.splitlines(True)])
 
+def tipo(t):
+    if type(t) is not tuple:
+        return "?"
+    elif t[0] == tipo_BASICO:
+        if t[1] == tipo_BOOL:
+            return "bool"
+        elif t[1] == tipo_NUMBER:
+            return "número"
+        elif t[1] == tipo_STRING:
+            return "cadena"
+        else:
+            return "?"
+    elif t[0] == tipo_ARREGLO:
+        return "arreglo"
+    elif t[0] == tipo_REGISTRO:
+        return "registro"
+    else:
+        return "?"
 
 def lineerr(n):
     return "Error de parseo en línea {}: ".format(n)
@@ -183,10 +201,10 @@ def p_opassign(se):
     """
     if type(se[1]) is Termino: # arraymember ASSIGN expression | registermember ASSIGN expression
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[2])
-        if se[2] == "+=" and not (se[1].tipo in ["NUMBER", "STRING"]):
+        if se[2] == "+=" and se[1].tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_STRING)]:
             msg += "se esperaba un tipo numérico o string para +="
             raise Exception(msg)
-        elif s[2] in ["-=","*=","/="] and not (se[1].tipo == "NUMBER"):
+        elif s[2] in ["-=","*=","/="] and se[1].tipo != (tipo_BASICO, tipo_NUMBER):
             msg += "se esperaba un tipo numérico para " ++ se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
@@ -200,13 +218,13 @@ def p_opassign(se):
             msg += "el tipo de la variable " + se[2] + "no coincide con el"
             msg += "tipo de la expresion"
             raise Exception(msg)
-        if se[2] == "+=" and tipo not in ["NUMBER", "STRING"]:
+        if se[2] == "+=" and tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_STRING)]:
             msg += "se esperaba un tipo numérico o string para +="
             raise Exception(msg)
         elif se[2] != "+=" and tipo != "NUMBER":
             msg += "se esperaba un tipo numérico para " + se[2];
             raise Exception(msg)
-        se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
+        se[0] = Instruccion("{} {} {}".format(se[1], se[2], se[3].texto))
 
 '''
 def p_maybeassign(se):
@@ -227,7 +245,7 @@ def p_assign(se):
     """
     if type(se[1]) is Termino: # arraymember ASSIGN expression | registermember ASSIGN expression
         msg = lineerr(se.lineno(2))
-        if(se[1].tipo != se[3].tipo):
+        if se[1].tipo != se[3].tipo:
             msg += "el tipo del arreglo de la variable " + se[1].texto + "no coincide con el"
             msg += "tipo de la expresion"
             raise Exception(msg)
@@ -250,36 +268,37 @@ def p_call(se):
     """
     msg = lineerr(se.lineno(1)) + se[1] + ": "
     if se[1] == "multiplicacionEscalar":
-        tipo = "ARR_NUMBER"
+        tipo = (tipo_ARREGLO, (tipo_BASICO, tipo_NUMBER))
         if len(se[3]) != 2 and len(se[3]) != 3:
             raise Exception(msg + "se esparaban 2 o 3 parámetros")
-        if se[3][0].tipo != "ARR_NUMBER":
+        if se[3][0].tipo != (tipo_ARREGLO, (tipo_BASICO, tipo_NUMBER)):
             raise Exception(msg + "se esperaba un arreglo numérico")
-        if se[3][1].tipo != "NUMBER":
+        if se[3][1].tipo != (tipo_BASICO, tipo_NUMBER):
             raise Exception(msg + "se esparaba un escalar")
-        if len(se[3]) == 3 and se[3][2].tipo != "BOOL":
+        if len(se[3]) == 3 and se[3][2].tipo != (tipo_BASICO, tipo_BOOL):
             raise Exception(msg + "se esperaba un booleano")
     elif se[1] == "capitalizar":
-        tipo = "STRING"
+        tipo = (tipo_BASICO, tipo_STRING)
         if len(se[3]) != 1:
             raise Exception(msg + "se esperaba un parámetro")
-        if se[3][0].tipo != "STRING":
+        if se[3][0].tipo != (tipo_BASICO, tipo_STRING):
             raise Exception(msg + "se esperaba una cadena")
     elif se[1] == "colineales":
-        tipo = "BOOL"
+        tipo = (tipo_BASICO, tipo_BOOL)
         if len(se[3]) != 2:
             raise Exception(msg + "se esperaban 2 parámetros")
-        if se[3][0].tipo != "ARR_NUMBER" or se[3][1].tipo != "ARR_NUMBER":
+        if se[3][0].tipo != (tipo_ARREGLO, (tipo_BASICO, tipo_NUMBER)) \
+           or se[3][1].tipo != (tipo_ARREGLO, (tipo_BASICO, tipo_NUMBER)):
             raise Exception(msg + "se esperaban arreglos numéricos")
     elif se[1] == "print":
-        tipo = "PRINT"
+        tipo = (tipo_BASICO, tipo_UNKNOWN)
         if len(se[3]) != 1:
             raise Exception(msg + "se esperaba un parámetro")
     elif se[1] == "length":
-        tipo = "NUMBER"
+        tipo = (tipo_BASICO, tipo_NUMBER)
         if len(se[3]) != 1:
             raise Exception(msg + "se esperaba un parámetro")
-        if se[3][0].tipo != "STRING" and not se[3][0].tipo.startswith("ARR_"):
+        if se[3][0].tipo != (tipo_BASICO, tipo_STRING) and se[3][0].tipo[0] != tipo_ARREGLO:
             raise Exception(msg + "se esperaba una cadena o un arreglo")
     else:
         raise Exception(msg + "función desconocida")
@@ -324,7 +343,7 @@ def p_literal(se):
             | FALSE
             | TRUE
     """
-    se[0] = Termino(se[1][0],se[1][1])
+    se[0] = Termino(se[1][0], se[1][1])
 
 
 def p_expressionlist(se):
@@ -345,25 +364,26 @@ def p_array(se):
     array : LBRACKET expressionlist RBRACKET
     """
     if len(se[2]) == 0: # LBRACKET RBRACKET
-        tipo = "UNKNOWN"
+        tipo = (tipo_BASICO, tipo_UNKNOWN)
     else: # LBRACKET expressionlist RBRACKET
         tipo = se[2][0].tipo
         if any(e.tipo != tipo for e in se[2]):
             msg = lineerr(se.lineno(1))
             msg += "los elementos del arreglo no son del mismo tipo"
             raise Exception(msg)
-    se[0] = Termino("[" + ", ".join(e.texto for e in se[2]) + "]", "ARR_" + tipo)
+    se[0] = Termino("[" + ", ".join(e.texto for e in se[2]) + "]", (tipo_ARREGLO, tipo))
 
 def p_arraymember(se):
     """
     arraymember : var LBRACKET expression RBRACKET
+                | array LBRACKET expression RBRACKET
     """
     msg = lineerr(se.lineno(1))
-    if se[3].tipo != "NUMBER":
+    if se[3].tipo != (tipo_BASICO, tipo_NUMBER):
         msg += "el índice del arreglo no es numérico"
         raise Exception(msg)
     msg += se[1].texto + ": "
-    if not se[1].tipo.startswith("ARR_"):
+    if se[1].tipo[0] != tipo_ARREGLO:
         raise Exception(msg + "no es un arreglo")
     se[0] = Termino("{}[{}]".format(se[1].texto, se[3].texto), se[1].tipo[4:])
 
@@ -459,9 +479,9 @@ def p_binaryop(se):
         msg = "{}({}): ".format(lineerr(se.lineno(2)), se[2])
         if se[1].tipo != se[3].tipo:
             raise Exception(msg + "los tipos no coinciden")
-        elif se[2] == "+" and se[1].tipo not in ["NUMBER", "STRING"]:
-                raise Exception(msg + "se esparaban números o cadenas, se encontró " + se[1].tipo)
-        elif se[2] == "-" and se[1].tipo != "NUMBER":
+        elif se[2] == "+" and se[1].tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_ARREGLO)]:
+                raise Exception(msg + "se esparaban números o cadenas, se encontró " + tipo(se[1].tipo))
+        elif se[2] == "-" and se[1].tipo != (tipo_BASICO, tipo_NUMBER):
             raise Exception(msg + "se esperaban números")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
@@ -479,7 +499,7 @@ def p_term(se):
         msg = "{}({}): ".format(lineerr(se.lineno(2)), se[2])
         if se[1].tipo != se[3].tipo:
             raise Exception(msg + "los tipos no coinciden")
-        elif se[1].tipo != "NUMBER":
+        elif se[1].tipo != (tipo_BASICO, tipo_NUMBER):
             raise Exception(msg + "se esperaban números")
         se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), se[1].tipo)
 
@@ -538,7 +558,7 @@ def p_var(se):
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
         if se[1] not in type_by_id:
             raise Exception(msg + "variable no declarada")
-        se[0] = Termino(se[1], type_by_id[se[1]], register_types.get(se[1]))
+        se[0] = Termino(se[1], type_by_id[se[1]])
 
 def p_factor(se):
     """

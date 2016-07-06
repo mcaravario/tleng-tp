@@ -19,12 +19,12 @@ def t_NEWLINE(tok):
 
 def t_NUMBER(tok):
     r"[0-9]+(\.[0-9]+)?"
-    tok.value = (tok.value, "NUMBER")
+    tok.value = (tok.value, (tipo_BASICO, tipo_NUMBER))
     return tok
 
 def t_STRING(tok):
     r"\"[^\"]*\""
-    tok.value = (tok.value, "STRING")
+    tok.value = (tok.value, (tipo_BASICO, tipo_STRING))
     return tok
 
 def t_ID(tok):
@@ -33,7 +33,7 @@ def t_ID(tok):
         raise Exception("identificador coincide con palabra clave");
     tok.type = reserved.get(tok.value, "ID")
     if tok.type == "TRUE" or tok.type == "FALSE":
-        tok.value = (tok.value, "BOOL")
+        tok.value = (tok.value, (tipo_BASICO, tipo_BOOL))
     return tok
 
 t_ignore_WHITESPACES = r"[ \t]+"
