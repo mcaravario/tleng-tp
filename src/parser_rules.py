@@ -79,11 +79,8 @@ def p_instrop(se):
             | unarymod SEMICOLON
             | call SEMICOLON
             | RETURN expression SEMICOLON
-            | loop
     """
-    if len(se) == 2 and (type(se[1]) is Instruccion): # loop
-        se[0] = Instruccion(se[1].texto)
-    elif len(se) == 3: # assign SEMICOLON | call SEMICOLON
+    if len(se) == 3: # assign SEMICOLON | unarymod SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";")
     else: ## RETURN expression SEMICOLON
         se[0] = Instruccion("{} {};".format(se[1],se[2].texto))
@@ -110,24 +107,18 @@ def p_block(se):
     else: # LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
         se[0] = Bloque(se[3].texto, se[2], se[5])
 
-def p_blockaux(se):
-    """
-    blockaux : instrop
-             | LBRACE instrlist RBRACE
-    """
-    if len(se) == 2: # instr
-        se[0] = Instruccion(se[1].texto)
-    else: # LBRACE instrlist RBRACE
-        se[0] = Bloque(se[2].texto)
-
 # CONDITIONALS
 
 def p_instaux(se):
     """
     instaux : mconditional
             | oconditional
+            | loop
     """
-    se[0] = se[1]
+    if type(se[1]) is Instruccion: # loop
+        se[0] = Instruccion(se[1].texto)
+    else:
+        se[0] = se[1]
 
 def p_mconditional(se):
     """
@@ -154,8 +145,8 @@ def p_oconditional(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT blockaux
-         | WHILE LPARENT expression RPARENT blockaux
+    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
+         | WHILE LPARENT expression RPARENT block
          | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
     if len(se) == 10: # FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
