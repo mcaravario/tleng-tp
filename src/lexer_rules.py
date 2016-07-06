@@ -6,6 +6,12 @@ def t_error(tok):
     msg += "\n\tvalue: " + str(tok.value)
     raise Exception(msg)
 
+def t_COMMENT(tok):
+    r"^\#.*|\n\#.*"
+    tok.value = tok.value[tok.value.find("#"):]
+    tok.lexer.lineno += 1
+    return tok
+
 def t_NEWLINE(tok):
     r"\n+"
     tok.lexer.lineno += len(tok.value)
@@ -31,9 +37,7 @@ def t_ID(tok):
 
 t_ignore_WHITESPACES = r"[ \t]+"
 
-t_COMMENT = r"[ ]+\#.*"
-
-t_COMMENT_NL = r"\#.*"
+t_INLCOMMENT = r"\#.*"
 
 t_SEMICOLON = r";"
 
