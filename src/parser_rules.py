@@ -472,7 +472,7 @@ def p_binaryop(se):
         msg = "{}({}): ".format(lineerr(se.lineno(2)), se[2])
         if se[1].tipo != se[3].tipo:
             raise Exception(msg + "los tipos no coinciden")
-        elif se[2] == "+" and se[1].tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_ARREGLO)]:
+        elif se[2] == "+" and se[1].tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_STRING)]:
                 raise Exception(msg + "se esparaban números o cadenas, se encontró " + tipo(se[1].tipo))
         elif se[2] == "-" and se[1].tipo != (tipo_BASICO, tipo_NUMBER):
             raise Exception(msg + "se esperaban números")
