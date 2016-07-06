@@ -7,9 +7,7 @@ def t_error(tok):
     raise Exception(msg)
 
 def t_COMMENT(tok):
-    r"^[ \t]*\#.*|\n[ \t]*\#.*"
-    if tok.value[0] == "\n":
-        tok.lexer.lineno += 1
+    r"(?m)^[ \t]*\#.*"
     tok.value = tok.value[tok.value.find("#"):]
     return tok
 
