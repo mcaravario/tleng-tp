@@ -22,19 +22,21 @@ o descargandolo de su pagina oficial \url{http://www.dabeaz.com/ply/}
 Para ejecutar el parser debe ejecutarse en una terminal de linux el siguiente
 comando desde la carpeta donde se encuentra el código:
 \begin{verbatim}
-$ ./SLSParser -c INPUT -o OUTPUT
+./SLSParser [-h] [-o SALIDA] [-c ENTRADA | FUENTE]
 \end{verbatim}
 
-
-En donde INPUT sera el path del archivo a parsear y OUTPUT el path en donde
-será escrito el resultado del parser luego de aplicar las reglas.
+\begin{tabular}{ll}
+     -h, --help    &  Muestra el mensaje de ayuda del programa \\
+     -o SALIDA     &  Archivo de salida para el código formateado \\
+     -c ENTRADA    &  Nombre del archivo de entrada con el código fuente \\
+     FUENTE        &  Cadena con el código fuente (una sola línea)
+\end{tabular}
 
 En caso de no
-especificar un archivo de entrada el parser funcionará de forma interactiva,
-permitiendo al usuario escribir en la terminal el código que desea parsear. Una
-vez que el usuario termina de escribir manualmente lo que desea parsear deberá
-presionar CTRL+d, con lo cual se ejecutara el parser y mostrara por pantalla
-los resultados obtenidos.
+especificar un archivo de entrada el parser leerá el código por \textbf{standard input},
+permitiendo al usuario escribir en la terminal el código que desea formatear. Una vez escrito
+el código se debe presionar CTRL+d (\textbf{EOL}) para indicar que es el fin de linea para que
+luego el parser formatee el código.
 
 \subsection{Código}
 A continuación presentamos el codigo utilizado para generar las reglas del
