@@ -566,4 +566,4 @@ def p_factor(se):
             msg = lineerr(se.lineno(1))
             raise Exception(msg + "print no devuelve un valor")
     else:
-        se[0] = Termino("( {} )".format(se[2].texto), se[2].tipo)
+        se[0] = Termino("({})".format(se[2].texto), se[2].tipo)
