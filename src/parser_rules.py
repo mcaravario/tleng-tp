@@ -220,7 +220,7 @@ def p_opassign(se):
         if se[2] == "+=" and tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_STRING)]:
             msg += "se esperaba un tipo numérico o string para +="
             raise Exception(msg)
-        elif se[2] != "+=" and tipo != "NUMBER":
+        elif se[2] != "+=" and tipo != (tipo_BASICO, tipo_NUMBER):
             msg += "se esperaba un tipo numérico para " + se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1], se[2], se[3].texto))
@@ -323,7 +323,7 @@ def p_expression(se):
     """
     if len(se) == 6: # LPARENT expression RPARENT QUESTION expression COLON expression
         msg = lineerr(se.lineno(2))
-        if se[1].tipo != "BOOL":
+        if se[1].tipo != (tipo_BASICO, tipo_BOOL):
             msg += "se esperaba una expresión booleana"
             raise Exception(msg)
         elif se[3].tipo != se[5].tipo:
@@ -452,12 +452,12 @@ def p_lcomp(se):
         if(se[1].tipo != se[3].tipo):
             msg = "{} {}: ".format(lineerr(se.lineno(2)),se[2])
             raise Exception(msg + "los tipos no coinciden")
-        se[0] = Termino("{} {} {}".format(se[1].texto,se[2],se[3].texto),"BOOL")
+        se[0] = Termino("{} {} {}".format(se[1].texto,se[2],se[3].texto), (tipo_BASICO, tipo_BOOL))
     else: # <=, >=, <, >
-        if(se[1].tipo != "NUMBER" or se[3].tipo != "NUMBER"):
+        if se[1].tipo != (tipo_BASICO, tipo_NUMBER) or se[3].tipo != (tipo_BASICO, tipo_NUMBER):
             msg = "{} {}: ".format(lineerr(se.lineno(2)),se[2])
             raise Exception(msg + "se esperaban dos numeros")
-        se[0] = Termino("{} {} {}".format(se[1].texto,se[2],se[3].texto),"BOOL")
+        se[0] = Termino("{} {} {}".format(se[1].texto,se[2],se[3].texto), (tipo_BASICO, tipo_BOOL))
 
 
 def p_binaryop(se):
@@ -506,12 +506,12 @@ def p_unarymod(se):
     """
     if(type(se[1]) is Termino):
         msg = "{}: ".format(lineerr(se.lineno(1)))
-        if se[1].tipo != "NUMBER":
+        if se[1].tipo != (tipo_BASICO, tipo_NUMBER):
             raise Exception(msg + " se esperaba numérico para" ++ se[1])
         se[0] = Termino(se[1].texto + se[2],se[1].tipo)
     else:
         msg = "{}: ".format(lineerr(se.lineno(1)))
-        if se[2].tipo != "NUMBER":
+        if se[2].tipo != (tipo_BASICO, tipo_NUMBER):
             raise Exception(msg + " se esperaba numérico para" ++ se[1])
         se[0] = Termino(se[1] + se[2].texto,se[2].tipo)
 
@@ -528,12 +528,12 @@ def p_unaryop(se):
     else:
         if se[1] == "NOT":
             msg = "{}: ".format(lineerr(se.lineno(1)))
-            if se[2].tipo != "BOOL":
+            if se[2].tipo != (tipo_BASICO, tipo_BOOL):
                 raise Exception(msg + " se esperaba tipo bool para NOT")
             se[0] = Termino("{} {}".format(se[1], se[2].texto), se[2].tipo)
         elif se[1] != "NOT":
             msg = "{}: ".format(lineerr(se.lineno(1)))
-            if se[2].tipo != "NUMBER":
+            if se[2].tipo != (tipo_BASICO, tipo_NUMBER):
                 raise Exception(msg + " se esperaba numérico para" ++ se[1])
             se[0] = Termino("{}{}".format(se[1], se[2].texto), se[2].tipo)
 
