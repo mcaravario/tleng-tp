@@ -16,7 +16,7 @@ def lineerr(n):
 
 def formatBlock(t):
     if type(t) is Bloque:
-        return " {\n" + tab(t.texto) + "}\n";
+        return " {" + t.comentarios[0] + "\n" + tab(t.texto) + "}" + t.comentarios[1] + "\n"
     else:
         return "\n" + tab(t.texto)
 
@@ -48,30 +48,29 @@ def p_instrlist(se):
 
 def p_instr(se):
     """
-    instr : commentlist instrop maybecomment
-          
+    instr : commentlist instrop maybeinlcomment
     """
     if len(se) == 4:
         se[0] = Instruccion(se[1] + se[2].texto + se[3] + "\n")
 
 def p_commentlist(se):
     """
-    commentlist : 
-                | COMMENT_NL commentlist
+    commentlist :
+                | COMMENT commentlist
     """
-    if len(se) == 3:
-        se[0] = se[1] + se[2]
-    else:
+    if len(se) == 3: # COMMENT commentlist
+        se[0] = se[1] + "\n" + se[2]
+    else: #
         se[0] = ""
 
-def p_maybecomment(se):
+def p_maybeinlcomment(se):
     """
-    maybecomment :            
-                 | COMMENT_NL
+    maybeinlcomment :
+                    | INLCOMMENT
     """
-    if len(se) == 2: 
-        se[0] = se[1]
-    else:
+    if len(se) == 2: # INLCOMMENT
+        se[0] = " " + se[1]
+    else: #
         se[0] = ""
 
 def p_instrop(se):
@@ -104,12 +103,12 @@ def p_instropfor(se):
 def p_block(se):
     """
     block : instr
-          | LBRACE instrlist RBRACE
+          | LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
     """
     if len(se) == 2: # instr
         se[0] = Instruccion(se[1].texto)
-    else: # LBRACE instrlist RBRACE
-        se[0] = Bloque(se[2].texto)
+    else: # LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
+        se[0] = Bloque(se[3].texto, se[2], se[5])
 
 def p_blockaux(se):
     """
@@ -149,7 +148,7 @@ def p_oconditional(se):
     if len(se) == 6:
         se[0] = Instruccion("if ({}){}".format(se[3].texto, formatBlock(se[5])))
     else:
-        se[0] = Instruccion("if ({}){}else {}".format(se[3].texto,formatBlock(se[5]),formatBlock(se[7])))
+        se[0] = Instruccion("if ({}){}else{}".format(se[3].texto,formatBlock(se[5]),formatBlock(se[7])))
 
 # LOOP
 

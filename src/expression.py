@@ -9,5 +9,6 @@ class Instruccion(object):
         self.texto = texto
 
 class Bloque(object):
-    def __init__(self, texto):
+    def __init__(self, texto, commb="", comme=""):
         self.texto = texto
+        self.comentarios = (str(commb), str(comme))
