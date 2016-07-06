@@ -203,7 +203,7 @@ def p_opassign(se):
         if se[2] == "+=" and se[1].tipo not in [(tipo_BASICO, tipo_NUMBER), (tipo_BASICO, tipo_STRING)]:
             msg += "se esperaba un tipo numérico o string para +="
             raise Exception(msg)
-        elif s[2] in ["-=","*=","/="] and se[1].tipo != (tipo_BASICO, tipo_NUMBER):
+        elif se[2] in ["-=","*=","/="] and se[1].tipo != (tipo_BASICO, tipo_NUMBER):
             msg += "se esperaba un tipo numérico para " ++ se[2];
             raise Exception(msg)
         se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
