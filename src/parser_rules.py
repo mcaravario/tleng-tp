@@ -401,8 +401,7 @@ def p_register(se):
 
 def p_registerlist(se): # TODO: sacar el shift-reduce?
     """
-    registerlist :
-                 | ID COLON expression
+    registerlist : ID COLON expression
                  | ID COLON expression COMMA registerlist
     """
     if len(se) == 1: #
