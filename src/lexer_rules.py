@@ -8,8 +8,9 @@ def t_error(tok):
 
 def t_COMMENT(tok):
     r"^[ \t]*\#.*|\n[ \t]*\#.*"
+    if tok.value[0] == "\n":
+        tok.lexer.lineno += 1
     tok.value = tok.value[tok.value.find("#"):]
-    tok.lexer.lineno += 1
     return tok
 
 def t_NEWLINE(tok):
