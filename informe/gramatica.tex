@@ -226,77 +226,48 @@
 
 \subsection{Expresiones regulares de los tokens}
 
-t\_NEWLINE = r"\textbackslash n+"
-
-t\_NUMBER = r"[0-9]+(\textbackslash.[0-9]+)?" 
-
-t\_STRING = r"\textbackslash"[\^ \textbackslash"]*\textbackslash""
-
-t\_ID = r"[a-zA-Z][a-zA-Z0-9\_]*"
-
-t\_ignore\_WHITESPACES = r"[ \textbackslash t]+"
-
-t\_COMMENT = r"\textbackslash\#.*"
-
-t\_SEMICOLON = r";"
-
-t\_COLON = r":"
- 
-t\_RBRACE = r"\}"
- 
-t\_LBRACE = r"\{"
-
-t\_RBRACKET = r"\textbackslash]"
-      
-t\_LBRACKET = r"\textbackslash["
-           
-t\_RPARENT = r"\textbackslash)"
-             
-t\_LPARENT = r"\textbackslash("
-              
-t\_ADD = r"\textbackslash+"
-                
-t\_ADDEQ = r"\textbackslash+="
-                   
-t\_INC = r"\textbackslash+\textbackslash+"
-                    
-t\_DEC = r"--"
-                     
-t\_ASSIGN = r"="
-                        
-t\_EQUAL = r"=="
-                          
-t\_SUB = r"-"
-                           
-t\_SUBEQ = r"-="
-                               
-t\_MULT = r"\textbackslash*"
-                                 
-t\_MULTEQ = r"\textbackslash*="
-                                   
-t\_DIV = r"/"
-                                     
-t\_DIVEQ = r"/="
-                                       
-t\_POW = r"\textbackslash \^"
-                                         
-t\_MOD = r"\%"
-                                           
-t\_LT = r"$<$"
-                                            
-t\_LEQ = r"$<=$"
-                                               
-t\_GEQ = r"$>=$"
-                                                 
-t\_GT = r"$>$"
-                                                   
-t\_LNOTEQ = r"$!=$"
-                                                     
-t\_QUESTION = r"\textbackslash?"
-                                                      
-t\_DOT = r"\textbackslash."
-                                                         
-t\_COMMA = r","
+\begin{tabular}{| c | c | c |}
+\hline
+Terminal & Token (\textit{lexer\_rules.py}) & Regex \\
+\hline
+\ & t\_NEWLINE & \textbackslash n+\\
+\NUMBER & t\_NUMBER & [0-9]+(\textbackslash.[0-9]+)?\\
+\STRING & t\_STRING & \textbackslash[\^ \textbackslash]*\textbackslash\\
+\ID & t\_ID & [a-zA-Z][a-zA-Z0-9\_]*\\
+\ & t\_ignore\_WHITESPACES & [ \textbackslash t]+\\
+\COMMENT & t\_COMMENT & \textbackslash\#.*\\
+\SEMICOLON & t\_SEMICOLON & ;\\
+\COLON & t\_COLON & :\\
+\RBRACE & t\_RBRACE & \}\\
+\LBRACE & t\_LBRACE & \{\\
+\RBRACKET & t\_RBRACKET & \textbackslash]\\
+\LBRACKET & t\_LBRACKET & \textbackslash[\\
+\RPARENT & t\_RPARENT & \textbackslash)\\
+\LPARENT & t\_LPARENT & \textbackslash(\\
+\ADD & t\_ADD & \textbackslash+\\
+\ADDEQ & t\_ADDEQ & \textbackslash+=\\
+\INC & t\_INC & \textbackslash+\textbackslash+\\
+\DEC & t\_DEC & --\\
+\ASSIGN & t\_ASSIGN & =\\
+\EQUAL & t\_EQUAL & ==\\
+\SUB & t\_SUB & -\\
+\SUBEQ & t\_SUBEQ & -=\\
+\MULT & t\_MULT & \textbackslash*\\
+\MULTEQ & t\_MULTEQ & \textbackslash*=\\
+\DIV & t\_DIV & /\\
+\DIVEQ & t\_DIVEQ & /=\\
+\POW & t\_POW & \textbackslash$\hat{ }$ \\
+\MOD & t\_MOD & \%\\
+\LT & t\_LT & $<$\\
+\LEQ & t\_LEQ & $<=$\\
+\GEQ & t\_GEQ & $>=$\\
+\GT & t\_GT & $>$\\
+\LNOTEQ & t\_LNOTEQ & $!=$\\
+\QUESTION & t\_QUESTION & \textbackslash?\\
+\DOT & t\_DOT & \textbackslash.\\
+\COMMA & t\_COMMA & , \\
+\hline
+\end{tabular}
 
 \subsection{Explicación de la gramática}
 La gramática utilizada en trabajo práctico es de tipo LALR(Look-Ahead LR
