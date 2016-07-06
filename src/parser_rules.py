@@ -248,10 +248,10 @@ def p_assign(se):
             msg += "el tipo del arreglo de la variable " + se[1].texto + "no coincide con el"
             msg += "tipo de la expresion"
             raise Exception(msg)
-        se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
+        se[0] = Instruccion("{} {} {}".format(se[1].texto, se[2], se[3].texto))
     else:
         type_by_id[se[1]] = se[3].tipo
-        se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
+        se[0] = Instruccion("{} {} {}".format(se[1], se[2], se[3].texto))
 
 # CALL
 
@@ -382,7 +382,7 @@ def p_arraymember(se):
     msg += se[1].texto + ": "
     if se[1].tipo[0] != tipo_ARREGLO:
         raise Exception(msg + "no es un arreglo")
-    se[0] = Termino("{}[{}]".format(se[1].texto, se[3].texto), se[1].tipo[4:])
+    se[0] = Termino("{}[{}]".format(se[1].texto, se[3].texto), se[1].tipo[1])
 
 
 # REGISTER
@@ -428,13 +428,13 @@ def p_lbinaryop(se):
               | expression OR lcomp
               | lcomp
     """
-    if(len(se) == 2):
+    if len(se) == 2:
         se[0] = se[1]
     else:
-        if(se[1].tipo != "BOOL" or se[3].tipo != "BOOL"):
+        if se[1].tipo != (tipo_BASICO, tipo_BOOL) or se[3].tipo != (tipo_BASICO, tipo_BOOL):
             msg = "{}: ".format(lineerr(se.lineno(1)))
             raise Exception(msg + "se esperaban dos bools")
-        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), "BOOL")
+        se[0] = Termino("{} {} {}".format(se[1].texto, se[2], se[3].texto), (tipo_BASICO, tipo_BOOL))
 
 def p_lcomp(se):
     """
