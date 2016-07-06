@@ -1,19 +1,19 @@
 \section{Pruebas}
 A continuación presentaremos algunos casos de prueba con expresiones del
 lenguaje sintacticamente correctas e incorrectas, analizando en cada caso que
-deberia devolver el parser.
+debería devolver el parser.
 
 \subsection{Expresiones Correctas}
 \begin{enumerate}
 \item
-Un ejemplo de una expresion sintacticamente valida seria la siguiente:
+Un ejemplo de una expresión sintacticamente válida sería la siguiente:
 \begin{verbatim}
 a = 0;
 for (; true; ) for (; false; ) {a=10;}
 \end{verbatim}
-En este caso el ejemplo es correcto ya que solamente el segundo parametro del
+En este caso el ejemplo es correcto ya que solamente el segundo parámetro del
 for es obligatorio, y la sentencia es de una linea, es por eso que no
-necesita ir entre llaves. El parser deberia devolver lo siguiente:
+necesita ir entre llaves. El parser debería devolver lo siguiente:
 \begin{verbatim}
 a = 0;
 for (; true; )
@@ -22,7 +22,7 @@ for (; true; )
   }
 \end{verbatim}
 
-\item Otro caso podria ser la siguiente expresion:
+\item Otro caso podría ser la siguiente expresion:
   \begin{verbatim}
   x = 5;
   y = 10;
@@ -34,12 +34,12 @@ for (; true; )
   m = ((x + k[2] > 3) ? 2 ^ k[0] : (j[2] ? k[1] + 6 : (y)));
   \end{verbatim}
   En este caso todas las asignaciones son correctas, tanto las de valores como
-  las de los arreglos. Tambien es correcto el uso del operador ternario, cuyo
-  primer parametro es una expresion booleana correctamente formada y el segundo
+  las de los arreglos. También es correcto el uso del operador ternario, cuyo
+  primer parámetro es una expresion booleana correctamente formada y el segundo
   y tercer parametro son expresiones de enteros correctas.
 
-  El parser deberia devolver la misma expresion sin indentaciones, solamente
-  eliminando los saltos de linea entre la declaracion de k y m de la siguiente
+  El parser debería devolver la misma expresión sin indentaciones, solamente
+  eliminando los saltos de linea entre la declaración de k y m de la siguiente
   forma:
 \begin{verbatim}
   x = 5;
@@ -50,7 +50,7 @@ for (; true; )
   \end{verbatim}
 
 
-\item Finalmente otra expresion correcta seria:
+\item Finalmente otra expresión correcta seria:
 
 \begin{verbatim}
 usuarios = [{nombre:"Mr.X", edad:10}, usuario];
@@ -63,11 +63,11 @@ k = {list:["A", "B", "c"], doublelist:j};
 
 a += k.doublelist[0][1];
 \end{verbatim}
-La cual es una expresion correcta, pues todos los registros cumplen con las
-reglas sintacticas, tanto la declaracion como la asignacion de ellos. Tambien
-son expresiones correctamente validas el print y el for. En este caso el parser
-devolvera lo mismo pero sin el salto de linea entre la declaracion de k y a, y
-tambien indentara de manera adecuada las intrucciones dentro del for de la
+La cual es correcta, pues todos los registros cumplen con las
+reglas sintácticas, tanto la declaración como la asignación de ellos. También
+son expresiones correctamente válidas el print y el for. En este caso el parser
+devolverá lo mismo pero sin el salto de linea entre la declaración de k y a, y
+también indentara de manera adecuada las intrucciones dentro del for de la
 siguiente forma:
 
 \begin{verbatim}
@@ -86,7 +86,7 @@ a += k.doublelist[0][1];
 \subsection{Expresiones Incorrectas}
 
 \begin{enumerate}
-\item Una expresion sintacticamente incorrecta sería:
+\item Una expresión sintacticamente incorrecta sería:
   \begin{verbatim}
   a = 5;
   if(true){
@@ -97,11 +97,11 @@ a += k.doublelist[0][1];
     a=3
   }
   \end{verbatim}
-  En este caso la expresion es incorrecta ya que el segundo else no se
+  En este caso la expresión es incorrecta ya que el segundo else no se
   corresponde con ningun if anterior, es por eso que el parser dara error y
   devolvera el numero de linea en donde se produjo el error.
 
-\item Otro caso de una expresion incorrecta podria ser:
+\item Otro caso de una expresión incorrecta podria ser:
   \begin{verbatim}
   res=1;
   do{
@@ -119,9 +119,9 @@ a += k.doublelist[0][1];
   letra1 = array1[array2[1]];
   letra2 = array1['a'];
   \end{verbatim}
-  En este caso la letra1, se genera de forma correcta, indexando un numero en
+  En este caso la letra1, se genera de forma correcta, indexando un número en
   el array1, mientras que la letra2 se genera de forma incorrecta, ya que el
-  indice no es un numero natural sino una letra. Es por esto que el parser
+  índice no es un numero natural sino una letra. Es por esto que el parser
   falla.
 \end{enumerate}
 
