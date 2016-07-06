@@ -4,7 +4,6 @@ from expression import *
 
 
 type_by_id = {}
-register_types = {}
 
 
 def tab(s):
@@ -252,8 +251,6 @@ def p_assign(se):
         se[0] = Instruccion("{} {} {}".format(se[1].texto,se[2],se[3].texto))
     else:
         type_by_id[se[1]] = se[3].tipo
-        if(se[3].tipo == 'REGISTER'):
-            register_types[se[1]] = se[3].tiposreg
         se[0] = Instruccion("{} {} {}".format(se[1],se[2],se[3].texto))
 
 # CALL
@@ -397,16 +394,14 @@ def p_register(se):
     tiposreg = {}
     for e in se[2]:
         tiposreg[e[0]] = e[2]
-    se[0] = Termino("{ " + ", ".join(e[1] for e in se[2]) + " }", "REGISTER", tiposreg)
+    se[0] = Termino("{ " + ", ".join(e[1] for e in se[2]) + " }", (tipo_REGISTRO, tiposreg))
 
 def p_registerlist(se): # TODO: sacar el shift-reduce?
     """
     registerlist : ID COLON expression
                  | ID COLON expression COMMA registerlist
     """
-    if len(se) == 1: #
-        se[0] = []
-    elif len(se) == 4: # ID COLON expression
+    if len(se) == 4: # ID COLON expression
         se[0] = [(se[1], "{}: {}".format(se[1], se[3].texto), se[3].tipo)]
     else: # ID COLON expression COMMA registerlist
         se[0] = [(se[1], "{}: {}".format(se[1], se[3].texto), se[3].tipo)] + se[5]
@@ -415,15 +410,14 @@ def p_registermember(se):
     """
     registermember : ID DOT ID
     """
-    reg = register_types.get(se[1])
-    if reg is None:
+    reg = type_by_id.get(se[1])
+    if reg is None or reg[0] != tipo_REGISTRO:
         msg = "{}{}: ".format(lineerr(se.lineno(1)), se[1])
-        if se[1] not in type_by_id:
-            raise Exception(msg + " registro no declarada")
-    tipo = reg.get(se[3])
+        raise Exception(msg + " registro no declarado")
+    tipo = reg[1].get(se[3])
     if tipo is None:
         msg = "{}: ".format(lineerr(se.lineno(1)))
-        raise Exception(msg + "campo {} del registro {} no declarada".format(se[3],se[1]))
+        raise Exception(msg + "campo {} del registro {} no declarado".format(se[3],se[1]))
     se[0] = Termino("{}.{}".format(se[1], se[3]), tipo)
 
 
