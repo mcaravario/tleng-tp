@@ -149,11 +149,6 @@
 	  \\
     \regla{EXPRESSIONLIST}{EXPRESSION}
     \aregla{EXPRESSION \COMMA EXPRESSIONLIST} 
-    \\
-	  \regla{LITERAL}{\NUMBER}
-    \aregla{\STRING}
-    \aregla{\FALSE}
-    \aregla{\TRUE}
   \end{reglas}  
 
 \subsubsection{Arreglos}
@@ -218,6 +213,14 @@
     \aregla{VAR}
     \aregla{CALL}
     \aregla{\LPARENT EXPRESSION \RPARENT}
+  \end{reglas}
+
+\subsubsection{Literales}
+  \begin{reglas}
+    \regla{LITERAL}{\NUMBER}
+    \aregla{\STRING}
+    \aregla{\FALSE}
+    \aregla{\TRUE}
   \end{reglas}
 
 
