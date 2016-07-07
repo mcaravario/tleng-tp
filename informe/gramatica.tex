@@ -63,11 +63,13 @@
 % REGLAS
 \subsubsection{Instrucciones}
   \begin{reglas}
-	  \regla{INSTRLIST}{\COMMENT INSTRLIST}
-	  \aregla{INSTAUX INSTRLIST}
-	  \aregla{\LAMBDA}
+	  \regla{INSTRLIST}{INSTAUX INSTRLIST}
+	  \aregla{COMMENTLIST}
     \\	
     \regla{INSTR}{INSTROP MAYBEINLCOMMENT}
+    \\
+    \regla{COMMENTLIST}{\COMMENT COMMENTLIST}
+    \aregla{\LAMBDA}
 	  \\
     \regla{MAYBEINLCOMMENT}{\INLCOMMENT}
     \aregla{\LAMBDA}
@@ -76,19 +78,20 @@
     \aregla{UNARYMOD \SEMICOLON}
     \aregla{CALL \SEMICOLON}
     \aregla{\RETURN EXPRESSION \SEMICOLON}
+    \aregla{LOOP}
     \\
     \regla{INSTROPFOR}{ASSIGN}
     \aregla{UNARYMOD}
     \aregla{CALL}
     \aregla{\LAMBDA}
+    \\
+    \regla{INSTCOM}{\COMMENT INSTCOM}
+    \aregla{INSTR}
   \end{reglas}
 
 \subsubsection{Bloques de código}
   \begin{reglas}
-	  \regla{BLOCK}{INSTAUX}
-	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE MAYBEINLCOMMENT}
-    \\
-    \regla{BLOCKFOR}{INSTAUX}
+	  \regla{BLOCK}{INSTCOM}
 	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE MAYBEINLCOMMENT}
   \end{reglas}
 
@@ -96,18 +99,16 @@
   \begin{reglas}
 	  \regla{INSTAUX}{MCONDITIONAL}
     \aregla{OCONDITIONAL}
-    \aregla{LOOP}
-    \aregla{INSTR}
 	  \\
     \regla{MCONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT MCONDITIONAL \ELSE MCONDITIONAL}
-    \aregla{INSTAUX}
+    \aregla{BLOCK}
     \\
     \regla{OCONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT MCONDITIONAL \ELSE OCONDITIONAL}
 	  \aregla{\IF \LPARENT EXPRESSION \RPARENT INSTAUX}
     \\
     \regla{LOOP}{\FOR \LPARENT INSTROPFOR \SEMICOLON EXPRESSION \SEMICOLON
-    INSTROPFOR \RPARENT BLOCKFOR}
-    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKFOR}
+    INSTROPFOR \RPARENT BLOCK}
+    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCK}
     \aregla{\DO BLOCK \WHILE \LPARENT EXPRESSION \RPARENT \SEMICOLON}
   \end{reglas}
 
