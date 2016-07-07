@@ -1,10 +1,6 @@
 \section{Gramática}
 \label{sec:gramatica}
 
-\subsection{Simbolos Terminales}
-	Los símbolos terminales de la gramática son los definidos en el archivo 
-	\textit{tokens.py} (Ver sección \ref{codigo:tokens}).
-
 \subsection{Producciones}
 	Las producciones de la gramática son las siguientes. Los terminales
 	están puestos en negrita y los no terminales en mayúscula.
@@ -61,44 +57,44 @@
 \newToken{\DIVEQ}{/=}
 \newToken{\MULTEQ}{*=}
 \newToken{\ASSIGN}{=}
+\newToken{\INLCOMMENT}{comment}
 
 
 % REGLAS
 \subsubsection{Instrucciones}
   \begin{reglas}
-	  \regla{INSTRLIST}{INSTAUX}
-	  \aregla{INSTAUX INSTRLIST}
-    \\	
-    \regla{INSTR}{COMMENTLIST}
-	  \aregla{INSTROP}
-	  \aregla{MAYBECOMMENT}
-	  \\
+	  \regla{INSTRLIST}{INSTAUX INSTRLIST}
+	  \aregla{COMMENTLIST}
+     \\
     \regla{COMMENTLIST}{\COMMENT COMMENTLIST}
     \aregla{\LAMBDA}
-    \\
-    \regla{MAYBECOMMENT}{COMMENT}
+	  \\
+    \regla{MAYBEINLCOMMENT}{\INLCOMMENT}
     \aregla{\LAMBDA}
     \\
-    \regla{INSTROP}{ASSIGN \SEMICOLON}
+    \regla{INSTR}{ASSIGN \SEMICOLON}
     \aregla{UNARYMOD \SEMICOLON}
     \aregla{CALL \SEMICOLON}
     \aregla{\RETURN EXPRESSION \SEMICOLON}
     \aregla{LOOP}
     \\
     \regla{INSTROPFOR}{ASSIGN}
-    \aregla{ASSIGNEQ}
     \aregla{UNARYMOD}
     \aregla{CALL}
     \aregla{\LAMBDA}
+    \\
+    \regla{INSTCOM}{\COMMENT INSTCOM}
+    \aregla{INSTR}
   \end{reglas}
 
 \subsubsection{Bloques de código}
   \begin{reglas}
-	  \regla{BLOCK}{INSTR}
-	  \aregla{\LBRACE INSTRLIST \RBRACE}
+	  \regla{BLOCK}{INSTCOM MAYBEINLCOMMENT}
+	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE MAYBEINLCOMMENT}
     \\
-    \regla{BLOCKAUX}{INSTROP}
-	  \aregla{\LBRACE INSTRLIST \RBRACE}
+    \regla{BLOCKFOR}{INSTCOM}
+	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE}
+
   \end{reglas}
 
 \subsubsection{Condicionales y Ciclos}
@@ -113,8 +109,8 @@
 	  \aregla{\IF \LPARENT EXPRESSION \RPARENT INSTAUX}
     \\
     \regla{LOOP}{\FOR \LPARENT INSTROPFOR \SEMICOLON EXPRESSION \SEMICOLON
-    INSTROPFOR \RPARENT BLOCKAUX}
-    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKAUX}
+    INSTROPFOR \RPARENT BLOCKFOR}
+    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKFOR}
     \aregla{\DO BLOCK \WHILE \LPARENT EXPRESSION \RPARENT \SEMICOLON}
   \end{reglas}
 
@@ -125,11 +121,10 @@
     \aregla{\DIVEQ}
     \aregla{\MULTEQ}
 	  \\
-	  \regla{ASSIGNEQ}{\ID ASSIGNOP EXPRESSION}
+	  \regla{ASSIGN}{\ID ASSIGNOP EXPRESSION}
     \aregla{ARRAYMEMBER ASSIGNOP EXPRESSION}
     \aregla{REGISTERMEMBER ASSIGNOP EXPRESSION}
-	  \\
-    \regla{ASSIGN}{\ID \ASSIGN EXPRESSION}
+	  \aregla{\ID \ASSIGN EXPRESSION}
     \aregla{ARRAYMEMBER \ASSIGN EXPRESSION}
     \aregla{REGISTERMEMBER \ASSIGN EXPRESSION}
 	  \\
@@ -156,6 +151,7 @@
     \regla{ARRAY}{\LBRACKET EXPRESSIONLIST \RBRACKET}
     \\
     \regla{ARRAYMEMBER}{VAR \LBRACKET EXPRESSION \RBRACKET}
+    \aregla{ARRAY \LBRACKET EXPRESSION \RBRACKET}
     \\
     \regla{REGISTER}{\LBRACE REGISTERLIST \RBRACE}
     \\
@@ -163,7 +159,7 @@
     \aregla{\ID \COLON EXPRESSION \COMMA REGISTERLIST}
     \aregla{\LAMBDA}
     \\ 
-    \regla{REGISTERMEMBER}{\ID \DOT \ID}
+    \regla{REGISTERMEMBER}{VAR \DOT \ID}
   \end{reglas}  
 
 \subsubsection{Operaciones Binarias}
@@ -231,11 +227,12 @@
 Terminal & Token (\textit{lexer\_rules.py}) & Regex \\
 \hline
 \ & t\_NEWLINE & \textbackslash n+\\
+\INLCOMMENT & t\_INLCOMMENT & \textbackslash \#.*\\
 \NUMBER & t\_NUMBER & [0-9]+(\textbackslash.[0-9]+)?\\
 \STRING & t\_STRING & \textbackslash[\^ \textbackslash]*\textbackslash\\
 \ID & t\_ID & [a-zA-Z][a-zA-Z0-9\_]*\\
 \ & t\_ignore\_WHITESPACES & [ \textbackslash t]+\\
-\COMMENT & t\_COMMENT & \textbackslash\#.*\\
+\COMMENT & t\_COMMENT & (?m)\^[ \textbackslash t]*\textbackslash \#.*\\
 \SEMICOLON & t\_SEMICOLON & ;\\
 \COLON & t\_COLON & :\\
 \RBRACE & t\_RBRACE & \}\\
@@ -301,8 +298,44 @@ Por una de la siguiente forma:
 Esto permitió que el parser utilize como delimitador cada símbolo no terminal
 antes de seguir parseando.
 
-\item Otro conflicto que nos presento la gramática fue el llamado Dangling else
-  ......
+\item Otro conflicto que nos presento la gramática fue el llamado Dangling
+  else, en el cual el parser no sabia asociar cada else a cada if. Este
+  problema resulto bastante complicado de resolver. Debimos de cambiar nuestra
+  gramatica de la pinta:
+  \begin{reglas}
+    \regla{INSTRLIST}{INSTR}
+    \aregla{INSTR INSTRLIST}
+    \\
+    \regla{INSTR}{\COMMENT}
+    \aregla{ASSIGN \SEMICOLON}
+    \aregla{CALL \SEMICOLON}
+    \aregla{CONDITIONAL}
+    \aregla{LOOP}
+    \\
+    \regla{CONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT BLOCK ELSEBRANCH}
+    \\
+    \regla{ELSEBRANCH}{\ELSE BLOCK}
+    \aregla{\LAMBDA}
+  \end{reglas}
+  Para resolver este conflicto utilizamos la solucion que propone el libro
+  \textit{Compilers: Principles Techniques and Tools, Alfred V. Aho, Monica S.
+  Lam, Ravi Sethi, Jeffrey D. Ullman}. Para evitar este conflicto, eliminamos la producción
+  EXPRESSION --$>$ UNARYOP y debimos modificar la gramatica de la siguiente forma:
+
+\begin{reglas}
+    \regla{INSTRLIST}{INSTAUX}
+    \aregla{INSTAUX INSTRLIST}
+    \\
+    \regla{INSTAUX}{MCONDITIONAL}
+    \aregla{OCONDITIONAL}
+    \\
+    \regla{MCONDITIONAL}{\IF \LPARENT expression \RPARENT mconditional \ELSE mconditional}
+    \aregla{BLOCK}
+    \\
+    \regla{OCONDITIONAL}{\IF \LPARENT expression \RPARENT mconditional \ELSE oconditional}
+    \aregla{\IF \LPARENT expression \RPARENT instaux}
+ 
+\end{reglas}
 
 \item Un conflicto de ambiguedad de la gramática que se nos presento fue que
   podiamos derivar en un literal de dos formas distintas, ya sea por EXPRESSION
