@@ -65,9 +65,9 @@ def p_instrlist(se):
 
 def p_instr(se):
     """
-    instr : instrop maybeinlcomment
+    instr : instrop
     """
-    se[0] = Instruccion(se[1].texto + se[2] + "\n")
+    se[0] = se[1]
 
 def p_commentlist(se):
     """
@@ -126,13 +126,23 @@ def p_instcom(se):
     else:
         se[0] = Instruccion(se[1] + "\n" + se[2].texto)
 
+def p_blockfor(se):
+    """
+    blockfor : instcom maybeinlcomment
+          | LBRACE maybeinlcomment instrlist RBRACE
+    """
+    if len(se) == 3: # instr
+        se[0] = Instruccion(se[1].texto + se[2] + "\n")
+    else: # LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
+        se[0] = Bloque(se[3].texto, se[2])
+
 def p_block(se):
     """
-    block : instcom
+    block : instcom maybeinlcomment
           | LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
     """
-    if len(se) == 2: # instr
-        se[0] = Instruccion(se[1].texto)
+    if len(se) == 3: # instr
+        se[0] = Instruccion(se[1].texto + se[2] + "\n")
     else: # LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
         se[0] = Bloque(se[3].texto, se[2], se[5])
 
@@ -170,8 +180,8 @@ def p_oconditional(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
-         | WHILE LPARENT expression RPARENT block
+    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT blockfor
+         | WHILE LPARENT expression RPARENT blockfor
          | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
     if len(se) == 10: # FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
