@@ -1,10 +1,6 @@
 \section{Gramática}
 \label{sec:gramatica}
 
-\subsection{Simbolos Terminales}
-	Los símbolos terminales de la gramática son los definidos en el archivo 
-	\textit{tokens.py} (Ver sección \ref{codigo:tokens}).
-
 \subsection{Producciones}
 	Las producciones de la gramática son las siguientes. Los terminales
 	están puestos en negrita y los no terminales en mayúscula.
@@ -61,32 +57,27 @@
 \newToken{\DIVEQ}{/=}
 \newToken{\MULTEQ}{*=}
 \newToken{\ASSIGN}{=}
+\newToken{\INLCOMMENT}{comment}
 
 
 % REGLAS
 \subsubsection{Instrucciones}
   \begin{reglas}
-	  \regla{INSTRLIST}{INSTAUX}
+	  \regla{INSTRLIST}{\COMMENT INSTRLIST}
 	  \aregla{INSTAUX INSTRLIST}
+	  \aregla{\LAMBDA}
     \\	
-    \regla{INSTR}{COMMENTLIST}
-	  \aregla{INSTROP}
-	  \aregla{MAYBECOMMENT}
+    \regla{INSTR}{INSTROP MAYBEINLCOMMENT}
 	  \\
-    \regla{COMMENTLIST}{\COMMENT COMMENTLIST}
-    \aregla{\LAMBDA}
-    \\
-    \regla{MAYBECOMMENT}{COMMENT}
+    \regla{MAYBEINLCOMMENT}{\INLCOMMENT}
     \aregla{\LAMBDA}
     \\
     \regla{INSTROP}{ASSIGN \SEMICOLON}
     \aregla{UNARYMOD \SEMICOLON}
     \aregla{CALL \SEMICOLON}
     \aregla{\RETURN EXPRESSION \SEMICOLON}
-    \aregla{LOOP}
     \\
     \regla{INSTROPFOR}{ASSIGN}
-    \aregla{ASSIGNEQ}
     \aregla{UNARYMOD}
     \aregla{CALL}
     \aregla{\LAMBDA}
@@ -94,27 +85,29 @@
 
 \subsubsection{Bloques de código}
   \begin{reglas}
-	  \regla{BLOCK}{INSTR}
-	  \aregla{\LBRACE INSTRLIST \RBRACE}
+	  \regla{BLOCK}{INSTAUX}
+	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE MAYBEINLCOMMENT}
     \\
-    \regla{BLOCKAUX}{INSTROP}
-	  \aregla{\LBRACE INSTRLIST \RBRACE}
+    \regla{BLOCKFOR}{INSTAUX}
+	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE MAYBEINLCOMMENT}
   \end{reglas}
 
 \subsubsection{Condicionales y Ciclos}
   \begin{reglas}
 	  \regla{INSTAUX}{MCONDITIONAL}
     \aregla{OCONDITIONAL}
+    \aregla{LOOP}
+    \aregla{INSTR}
 	  \\
     \regla{MCONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT MCONDITIONAL \ELSE MCONDITIONAL}
-    \aregla{BLOCK}
+    \aregla{INSTAUX}
     \\
     \regla{OCONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT MCONDITIONAL \ELSE OCONDITIONAL}
 	  \aregla{\IF \LPARENT EXPRESSION \RPARENT INSTAUX}
     \\
     \regla{LOOP}{\FOR \LPARENT INSTROPFOR \SEMICOLON EXPRESSION \SEMICOLON
-    INSTROPFOR \RPARENT BLOCKAUX}
-    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKAUX}
+    INSTROPFOR \RPARENT BLOCKFOR}
+    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKFOR}
     \aregla{\DO BLOCK \WHILE \LPARENT EXPRESSION \RPARENT \SEMICOLON}
   \end{reglas}
 
@@ -125,11 +118,10 @@
     \aregla{\DIVEQ}
     \aregla{\MULTEQ}
 	  \\
-	  \regla{ASSIGNEQ}{\ID ASSIGNOP EXPRESSION}
+	  \regla{ASSIGN}{\ID ASSIGNOP EXPRESSION}
     \aregla{ARRAYMEMBER ASSIGNOP EXPRESSION}
     \aregla{REGISTERMEMBER ASSIGNOP EXPRESSION}
-	  \\
-    \regla{ASSIGN}{\ID \ASSIGN EXPRESSION}
+	  \aregla{\ID \ASSIGN EXPRESSION}
     \aregla{ARRAYMEMBER \ASSIGN EXPRESSION}
     \aregla{REGISTERMEMBER \ASSIGN EXPRESSION}
 	  \\
@@ -156,6 +148,7 @@
     \regla{ARRAY}{\LBRACKET EXPRESSIONLIST \RBRACKET}
     \\
     \regla{ARRAYMEMBER}{VAR \LBRACKET EXPRESSION \RBRACKET}
+    \aregla{ARRAY \LBRACKET EXPRESSION \RBRACKET}
     \\
     \regla{REGISTER}{\LBRACE REGISTERLIST \RBRACE}
     \\
@@ -163,7 +156,7 @@
     \aregla{\ID \COLON EXPRESSION \COMMA REGISTERLIST}
     \aregla{\LAMBDA}
     \\ 
-    \regla{REGISTERMEMBER}{\ID \DOT \ID}
+    \regla{REGISTERMEMBER}{VAR \DOT \ID}
   \end{reglas}  
 
 \subsubsection{Operaciones Binarias}
@@ -231,11 +224,12 @@
 Terminal & Token (\textit{lexer\_rules.py}) & Regex \\
 \hline
 \ & t\_NEWLINE & \textbackslash n+\\
+\INLCOMMENT & t\_INLCOMMENT & \textbackslash \#.*\\
 \NUMBER & t\_NUMBER & [0-9]+(\textbackslash.[0-9]+)?\\
 \STRING & t\_STRING & \textbackslash[\^ \textbackslash]*\textbackslash\\
 \ID & t\_ID & [a-zA-Z][a-zA-Z0-9\_]*\\
 \ & t\_ignore\_WHITESPACES & [ \textbackslash t]+\\
-\COMMENT & t\_COMMENT & \textbackslash\#.*\\
+\COMMENT & t\_COMMENT & (?m)\^[ \textbackslash t]*\textbackslash \#.*\\
 \SEMICOLON & t\_SEMICOLON & ;\\
 \COLON & t\_COLON & :\\
 \RBRACE & t\_RBRACE & \}\\
