@@ -63,12 +63,6 @@ def p_instrlist(se):
     else:
         se[0] = Instruccion(se[1])
 
-def p_instr(se):
-    """
-    instr : instrop
-    """
-    se[0] = se[1]
-
 def p_commentlist(se):
     """
     commentlist :
@@ -89,13 +83,13 @@ def p_maybeinlcomment(se):
     else: #
         se[0] = ""
 
-def p_instrop(se):
+def p_instr(se):
     """
-    instrop : assign SEMICOLON
-            | unarymod SEMICOLON
-            | call SEMICOLON
-            | RETURN expression SEMICOLON
-            | loop
+    instr : assign SEMICOLON
+          | unarymod SEMICOLON
+          | call SEMICOLON
+          | RETURN expression SEMICOLON
+          | loop
     """
     if len(se) == 3: # assign SEMICOLON | unarymod SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";")
