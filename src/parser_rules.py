@@ -55,17 +55,13 @@ def p_error(se):
 
 def p_instrlist(se):
     """
-    instrlist :
-              | COMMENT instrlist
-              | instaux instrlist
+    instrlist : instaux instrlist
+              | commentlist
     """
     if len(se) == 3: # instr
-        if type(se[1]) is str:
-            se[0] = Instruccion(se[1] + "\n" + se[2].texto)
-        else:
-            se[0] = Instruccion(se[1].texto + se[2].texto)
+        se[0] = Instruccion(se[1].texto + se[2].texto)
     else:
-        se[0] = Instruccion("")
+        se[0] = Instruccion(se[1])
 
 def p_instr(se):
     """
@@ -73,15 +69,15 @@ def p_instr(se):
     """
     se[0] = Instruccion(se[1].texto + se[2] + "\n")
 
-# def p_commentlist(se):
-#     """
-#     commentlist : COMMENT
-#                 | COMMENT commentlist
-#     """
-#     if len(se) == 3: # COMMENT commentlist
-#         se[0] = se[1] + "\n" + se[2]
-#     else: #
-#         se[0] = ""
+def p_commentlist(se):
+    """
+    commentlist :
+                | COMMENT commentlist
+    """
+    if len(se) == 3: # COMMENT commentlist
+        se[0] = se[1] + "\n" + se[2]
+    else:
+        se[0] = ""
 
 def p_maybeinlcomment(se):
     """
@@ -99,11 +95,14 @@ def p_instrop(se):
             | unarymod SEMICOLON
             | call SEMICOLON
             | RETURN expression SEMICOLON
+            | loop
     """
     if len(se) == 3: # assign SEMICOLON | unarymod SEMICOLON | call SEMICOLON
         se[0] = Instruccion(se[1].texto + ";")
-    else: ## RETURN expression SEMICOLON
+    elif len(se) == 4: ## RETURN expression SEMICOLON
         se[0] = Instruccion("{} {};".format(se[1],se[2].texto))
+    else:
+        se[0] = se[1]
 
 def p_instropfor(se):
     """
@@ -117,20 +116,20 @@ def p_instropfor(se):
     else:
         se[0] = Instruccion("")
 
+def p_instcom(se):
+    """
+    instcom : COMMENT instcom
+            | instr
+    """
+    if len(se) == 2:
+        se[0] = se[1]
+    else:
+        se[0] = Instruccion(se[1] + "\n" + se[2].texto)
+
 def p_block(se):
     """
-    block : instaux
+    block : instcom
           | LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
-    """
-    if len(se) == 2: # instr
-        se[0] = Instruccion(se[1].texto)
-    else: # LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
-        se[0] = Bloque(se[3].texto, se[2], se[5])
-
-def p_blockfor(se):
-    """
-    blockfor : instaux
-             | LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
     """
     if len(se) == 2: # instr
         se[0] = Instruccion(se[1].texto)
@@ -143,18 +142,13 @@ def p_instaux(se):
     """
     instaux : mconditional
             | oconditional
-            | loop
-            | instr
     """
-    if type(se[1]) is Instruccion: # loop
-        se[0] = Instruccion(se[1].texto)
-    else:
-        se[0] = se[1]
+    se[0] = se[1]
 
 def p_mconditional(se):
     """
     mconditional : IF LPARENT expression RPARENT mconditional ELSE mconditional
-                 | instaux
+                 | block
     """
     if len(se) == 2:
         se[0] = se[1]
@@ -176,8 +170,8 @@ def p_oconditional(se):
 
 def p_loop(se):
     """
-    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT blockfor
-         | WHILE LPARENT expression RPARENT blockfor
+    loop : FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
+         | WHILE LPARENT expression RPARENT block
          | DO block WHILE LPARENT expression RPARENT SEMICOLON
     """
     if len(se) == 10: # FOR LPARENT instropfor SEMICOLON expression SEMICOLON instropfor RPARENT block
