@@ -295,8 +295,44 @@ Por una de la siguiente forma:
 Esto permitió que el parser utilize como delimitador cada símbolo no terminal
 antes de seguir parseando.
 
-\item Otro conflicto que nos presento la gramática fue el llamado Dangling else
-  ......
+\item Otro conflicto que nos presento la gramática fue el llamado Dangling
+  else, en el cual el parser no sabia asociar cada else a cada if. Este
+  problema resulto bastante complicado de resolver. Debimos de cambiar nuestra
+  gramatica de la pinta:
+  \begin{reglas}
+    \regla{INSTRLIST}{INSTR}
+    \aregla{INSTR INSTRLIST}
+    \\
+    \regla{INSTR}{\COMMENT}
+    \aregla{ASSIGN \SEMICOLON}
+    \aregla{CALL \SEMICOLON}
+    \aregla{CONDITIONAL}
+    \aregla{LOOP}
+    \\
+    \regla{CONDITIONAL}{\IF \LPARENT EXPRESSION \RPARENT BLOCK ELSEBRANCH}
+    \\
+    \regla{ELSEBRANCH}{\ELSE BLOCK}
+    \aregla{\LAMBDA}
+  \end{reglas}
+  Para resolver este conflicto utilizamos la solucion que propone el libro
+  \textit{Compilers: Principles Techniques and Tools, Alfred V. Aho, Monica S.
+  Lam, Ravi Sethi, Jeffrey D. Ullman}. Para evitar este conflicto, eliminamos la producción
+  EXPRESSION --$>$ UNARYOP y debimos modificar la gramatica de la siguiente forma:
+
+\begin{reglas}
+    \regla{INSTRLIST}{INSTAUX}
+    \aregla{INSTAUX INSTRLIST}
+    \\
+    \regla{INSTAUX}{MCONDITIONAL}
+    \aregla{OCONDITIONAL}
+    \\
+    \regla{MCONDITIONAL}{\IF \LPARENT expression \RPARENT mconditional \ELSE mconditional}
+    \aregla{BLOCK}
+    \\
+    \regla{OCONDITIONAL}{\IF \LPARENT expression \RPARENT mconditional \ELSE oconditional}
+    \aregla{\IF \LPARENT expression \RPARENT instaux}
+ 
+\end{reglas}
 
 \item Un conflicto de ambiguedad de la gramática que se nos presento fue que
   podiamos derivar en un literal de dos formas distintas, ya sea por EXPRESSION
