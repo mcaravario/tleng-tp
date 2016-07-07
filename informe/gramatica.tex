@@ -65,16 +65,14 @@
   \begin{reglas}
 	  \regla{INSTRLIST}{INSTAUX INSTRLIST}
 	  \aregla{COMMENTLIST}
-    \\	
-    \regla{INSTR}{INSTROP MAYBEINLCOMMENT}
-    \\
+     \\
     \regla{COMMENTLIST}{\COMMENT COMMENTLIST}
     \aregla{\LAMBDA}
 	  \\
     \regla{MAYBEINLCOMMENT}{\INLCOMMENT}
     \aregla{\LAMBDA}
     \\
-    \regla{INSTROP}{ASSIGN \SEMICOLON}
+    \regla{INSTR}{ASSIGN \SEMICOLON}
     \aregla{UNARYMOD \SEMICOLON}
     \aregla{CALL \SEMICOLON}
     \aregla{\RETURN EXPRESSION \SEMICOLON}
@@ -91,8 +89,12 @@
 
 \subsubsection{Bloques de código}
   \begin{reglas}
-	  \regla{BLOCK}{INSTCOM}
+	  \regla{BLOCK}{INSTCOM MAYBEINLCOMMENT}
 	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE MAYBEINLCOMMENT}
+    \\
+    \regla{BLOCKFOR}{INSTCOM MAYBEINLCOMMENT}
+	  \aregla{\LBRACE MAYBEINLCOMMENT INSTRLIST \RBRACE}
+
   \end{reglas}
 
 \subsubsection{Condicionales y Ciclos}
@@ -107,8 +109,8 @@
 	  \aregla{\IF \LPARENT EXPRESSION \RPARENT INSTAUX}
     \\
     \regla{LOOP}{\FOR \LPARENT INSTROPFOR \SEMICOLON EXPRESSION \SEMICOLON
-    INSTROPFOR \RPARENT BLOCK}
-    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCK}
+    INSTROPFOR \RPARENT BLOCKFOR}
+    \aregla{\WHILE \LPARENT EXPRESSION \RPARENT BLOCKFOR}
     \aregla{\DO BLOCK \WHILE \LPARENT EXPRESSION \RPARENT \SEMICOLON}
   \end{reglas}
 
