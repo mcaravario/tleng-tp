@@ -126,7 +126,7 @@ def p_blockfor(se):
           | LBRACE maybeinlcomment instrlist RBRACE
     """
     if len(se) == 2: # instr
-        se[0] = Instruccion(se[1].texto)
+        se[0] = se[1]
     else: # LBRACE maybeinlcomment instrlist RBRACE maybeinlcomment
         se[0] = Bloque(se[3].texto, se[2])
 
