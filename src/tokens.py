@@ -25,6 +25,7 @@ tokens = [
     'ID',
     'SEMICOLON',
     'COLON',
+    'INLCOMMENT',
     'COMMENT',
     'RBRACE',
     'LBRACE',
@@ -56,3 +57,11 @@ tokens = [
     'STRING',
     'COMMA'
 ] + list(reserved.values())
+
+tipo_UNKNOWN  = -1
+tipo_BASICO   = 1
+tipo_ARREGLO  = 2
+tipo_REGISTRO = 3
+tipo_BOOL     = 4
+tipo_NUMBER   = 5
+tipo_STRING   = 6
